@@ -1,7 +1,6 @@
 ﻿namespace ProcSync.ConsoleApp;
 
-using ProcSync.Core;
-using ProcSync.Core.SharedCounter;
+using ProcSync.Core.Counter;
 
 public static class Program
 {
@@ -10,42 +9,28 @@ public static class Program
         // Simple counter - Increment and Decrement
         {
             var counter = new SimpleCounter();
-            ParallelProcessor.RunParallel(1000, () =>
-            {
-                counter.Increment();
-                counter.Decrement();
-            });
+            ParallerCountingTester.RunIncrement(1000, counter);
             Console.WriteLine($"Simple     add e sub: {counter.Count}");
         }
 
         // Simple counter - Increment
         {
             var counter = new SimpleCounter();
-            ParallelProcessor.RunParallel(1000, () =>
-            {
-                counter.Increment();
-            });
+            ParallerCountingTester.RunIncrementAndDecrement(1000, counter);
             Console.WriteLine($"Simple     add e sub: {counter.Count}");
         }
 
         // Concurrent counter - Increment and Decrement
         {
             var counter = new ConcurrentCounter();
-            ParallelProcessor.RunParallel(1000, () =>
-            {
-                counter.Increment();
-                counter.Decrement();
-            });
+            ParallerCountingTester.RunIncrement(1000, counter);
             Console.WriteLine($"Concurrent add e sub: {counter.Count}");
         }
 
         // Concurrent counter - Increment
         {
             var counter = new ConcurrentCounter();
-            ParallelProcessor.RunParallel(1000, () =>
-            {
-                counter.Increment();
-            });
+            ParallerCountingTester.RunIncrementAndDecrement(1000, counter);
             Console.WriteLine($"Concurrent add e sub: {counter.Count}");
         }
     }

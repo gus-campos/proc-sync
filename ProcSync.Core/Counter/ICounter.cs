@@ -1,4 +1,4 @@
-namespace ProcSync.Core.SharedCounter;
+namespace ProcSync.Core.Counter;
 
 public interface ICounter
 {
