@@ -1,6 +1,6 @@
 namespace ProcSync.Core.Counter;
 
-public static class ParallerCountingTester
+public static class ParallelCountingTester
 {
     public static void RunIncrement(int stepsAmount, ICounter counter)
     {
