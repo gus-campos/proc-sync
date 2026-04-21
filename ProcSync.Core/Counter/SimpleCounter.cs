@@ -6,11 +6,11 @@ public class SimpleCounter : ICounter
 
     public void Increment()
     {
-        ++Count;
+        Count++;
     }
 
     public void Decrement()
     {
-        --Count;
+        Count--;
     }
 }
