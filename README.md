@@ -18,7 +18,7 @@ Projeto em C# desenvolvido com .NET para sincronização de processos.
 No diretório raiz da solução, execute:
 
 ```bash
-dotnet run --project ProcSync.Core
+dotnet run --project ProcSync.ConsoleApp
 ```
 
 Para rodar os testes, execute:

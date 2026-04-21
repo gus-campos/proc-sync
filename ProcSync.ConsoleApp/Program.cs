@@ -1,2 +1,15 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿
+
+namespace ProcSync.ConsoleApp;
+
+public static class Program
+{
+    public static void Main(string[] args)
+    {
+        for (int i = 0; i < 1000; i++)
+        {
+            Console.WriteLine("Hello, World!");
+        }
+    }
+}
+

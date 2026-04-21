@@ -1,11 +1,16 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": ".NET Attach",
-      "type": "coreclr",
-      "request": "attach",
-      "processName": "ProcSync.Core"
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/ProcSync.ConsoleApp/bin/Debug/net8.0/ProcSync.ConsoleApp.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/ProcSync.ConsoleApp",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
 }
