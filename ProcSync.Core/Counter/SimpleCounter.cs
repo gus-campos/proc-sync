@@ -13,4 +13,9 @@ public class SimpleCounter : ICounter
     {
         Count--;
     }
+
+    public void Reset()
+    {
+        Count = 0;
+    }
 }

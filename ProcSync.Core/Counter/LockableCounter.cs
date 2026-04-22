@@ -16,11 +16,16 @@ public class LockableCounter : ICounter
 
     public void Increment()
     {
-        _locker.RunLocked(() => _counter.Increment());
+        _locker.RunLocked(_counter.Increment);
     }
 
     public void Decrement()
     {
-        _locker.RunLocked(() => _counter.Decrement());
+        _locker.RunLocked(_counter.Decrement);
+    }
+
+    public void Reset()
+    {
+        _locker.RunLocked(_counter.Decrement);
     }
 }
