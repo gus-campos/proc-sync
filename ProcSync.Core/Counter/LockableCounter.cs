@@ -26,6 +26,6 @@ public class LockableCounter : ICounter
 
     public void Reset()
     {
-        _locker.RunLocked(_counter.Decrement);
+        _locker.RunLocked(_counter.Reset);
     }
 }
