@@ -4,16 +4,23 @@ namespace ProcSync.Core.Counter;
 
 public class LockableCounter : ICounter
 {
-    public int Count { get; private set; } = 0;
+    private readonly ICounter _counter;
     private readonly Locker _locker = new();
+
+    public int Count => _counter.Count;
+
+    public LockableCounter(ICounter counter)
+    {
+        _counter = counter;
+    }
 
     public void Increment()
     {
-        _locker.RunLocked(() => Count++);
+        _locker.RunLocked(() => _counter.Increment());
     }
 
     public void Decrement()
     {
-        _locker.RunLocked(() => Count--);
+        _locker.RunLocked(() => _counter.Decrement());
     }
 }

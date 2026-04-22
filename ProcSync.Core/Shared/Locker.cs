@@ -5,24 +5,46 @@ public class Locker
 {
     private int _busyFlag = 0;
 
-    public TResult RunLocked<TResult>(Func<TResult> action)
+    private void RunLockedBase(Action action)
     {
-        // Enquanto não conseguir obter lock do estado
+        /* 
+        Executa o lambda passado, respeitando o lock do estado.
+        
+        OBS: Enquanto ele não tiver o lock, esta thread cede a execução para 
+        outras threads.
+        */
+
         while (!TryLock())
         {
-            // Ceder execução para outra thread
             Thread.Yield();
         }
 
-        TResult result;
         try
         {
-            result = action();
+            action();
         }
         finally
         {
             Unlock();
         }
+    }
+
+    public void RunLocked(Action action)
+    {
+        RunLockedBase(action);
+    }
+
+    public TResult RunLocked<TResult>(Func<TResult> action)
+    {
+        /* Sobrecarga que permite execução de um lambda com retorno */
+
+        TResult result = default!;
+
+        RunLockedBase(() =>
+        {
+            result = action();
+        });
+
         return result;
     }
 
@@ -30,8 +52,9 @@ public class Locker
     {
         /* 
         Tenta obter o lock do estado, retornando se houve sucesso.
-        O CompareExchange em uma instrução atômica apenas, compara 
-        _busyFlag com 0 e troca o valor pra 1, quando possível.
+        
+        OBS: Aqui o CompareExchange em apenas uma instrução atômica, compara 
+        a flag com 0 e se possível troca o seu valor pra 1.
         */
 
         int oldValue = Interlocked.CompareExchange(ref _busyFlag, 1, 0);
@@ -41,7 +64,12 @@ public class Locker
 
     private void Unlock()
     {
-        // Troca valor de _busyFlagh pra 0, em uma instrução atômica
+        /* 
+        Declara fim do lock do estado.
+
+        OBS: O Exchange em apenas uma instrução atômica, seta a flag com valor 0  
+        */
+
         Interlocked.Exchange(ref _busyFlag, 0);
     }
 }

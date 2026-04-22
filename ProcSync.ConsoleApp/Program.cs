@@ -10,7 +10,7 @@ public static class Program
         {
             var counter = new SimpleCounter();
             ParallelCountingTester.RunIncrement(1000, counter);
-            Console.WriteLine($"Simple     add e sub: {counter.Count}");
+            Console.WriteLine($"Simple     add      : {counter.Count}");
         }
 
         // Simple counter - Increment and Decrement
@@ -22,16 +22,16 @@ public static class Program
 
         // Concurrent counter - Increment
         {
-            var counter = new LockableCounter();
+            var counter = new LockableCounter(new SimpleCounter());
             ParallelCountingTester.RunIncrement(1000, counter);
-            Console.WriteLine($"Concurrent add e sub: {counter.Count}");
+            Console.WriteLine($"Concurrent add e sub: {counter._count}");
         }
 
         // Concurrent counter - Increment and Decrement
         {
-            var counter = new LockableCounter();
+            var counter = new LockableCounter(new SimpleCounter());
             ParallelCountingTester.RunIncrementAndDecrement(1000, counter);
-            Console.WriteLine($"Concurrent add e sub: {counter.Count}");
+            Console.WriteLine($"Concurrent add      : {counter._count}");
         }
     }
 }
