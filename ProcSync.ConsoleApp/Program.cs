@@ -22,14 +22,14 @@ public static class Program
 
         // Concurrent counter - Increment
         {
-            var counter = new ConcurrentCounter();
+            var counter = new LockableCounter();
             ParallelCountingTester.RunIncrement(1000, counter);
             Console.WriteLine($"Concurrent add e sub: {counter.Count}");
         }
 
         // Concurrent counter - Increment and Decrement
         {
-            var counter = new ConcurrentCounter();
+            var counter = new LockableCounter();
             ParallelCountingTester.RunIncrementAndDecrement(1000, counter);
             Console.WriteLine($"Concurrent add e sub: {counter.Count}");
         }
