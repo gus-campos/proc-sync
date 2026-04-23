@@ -5,12 +5,12 @@ public class Locker
 {
     private int _busyFlag = 0;
 
-    async public Task RunLocked(Action action)
+    public void RunLocked(Action action)
     {
-        await RunLockedBase(action);
+        RunLockedBase(action);
     }
 
-    async public Task<TResult> RunLocked<TResult>(Func<TResult> func)
+    public TResult RunLocked<TResult>(Func<TResult> func)
     {
         /*
         * Sobrecarga que permite executar um lambda com retorno.
@@ -25,7 +25,7 @@ public class Locker
             result = func();
         };
 
-        await RunLockedBase(adapterAction);
+        RunLockedBase(adapterAction);
 
         return result;
     }
@@ -44,7 +44,7 @@ public class Locker
         return success;
     }
 
-    async private Task RunLockedBase(Action action)
+    private void RunLockedBase(Action action)
     {
         /* 
         * Executa o lambda passado, sem retorno, respeitando o lock do estado.
@@ -55,7 +55,7 @@ public class Locker
 
         while (!TryLock())
         {
-            await Task.Yield();
+            Thread.Yield();
         }
 
         try

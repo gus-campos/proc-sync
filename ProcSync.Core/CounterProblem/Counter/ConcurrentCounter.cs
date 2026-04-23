@@ -14,18 +14,18 @@ public class ConcurrentCounter : ICounter
         _counter = counter;
     }
 
-    async public Task Increment()
+    async public void Increment()
     {
-        await _locker.RunLocked(_counter.Increment);
+        _locker.RunLocked(_counter.Increment);
     }
 
-    async public Task Decrement()
+    async public void Decrement()
     {
-        await _locker.RunLocked(_counter.Decrement);
+        _locker.RunLocked(_counter.Decrement);
     }
 
-    async public Task Reset()
+    async public void Reset()
     {
-        await _locker.RunLocked(_counter.Reset);
+        _locker.RunLocked(_counter.Reset);
     }
 }

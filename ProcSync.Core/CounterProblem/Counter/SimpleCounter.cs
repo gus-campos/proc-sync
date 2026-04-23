@@ -5,17 +5,17 @@ public class SimpleCounter : ICounter
 {
     public int Count { get; private set; } = 0;
 
-    async public Task Increment()
+    public void Increment()
     {
         Count++;
     }
 
-    async public Task Decrement()
+    public void Decrement()
     {
         Count--;
     }
 
-    async public Task Reset()
+    public void Reset()
     {
         Count = 0;
     }
