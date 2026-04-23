@@ -44,14 +44,14 @@ dotnet_separate_import_directive_groups = true
 ########################################
 csharp_style_var_for_built_in_types = false:warning
 csharp_style_var_when_type_is_apparent = true:warning
-csharp_style_var_elsewhere = false:warning
+# csharp_style_var_elsewhere = false:warning
 
 ########################################
 
 # 🔹 EXPRESSÕES
 
 ########################################
-csharp_prefer_braces = true:error
+# csharp_prefer_braces = true:error
 csharp_style_expression_bodied_methods = false:warning
 csharp_style_expression_bodied_constructors = false:warning
 csharp_style_expression_bodied_properties = true:warning

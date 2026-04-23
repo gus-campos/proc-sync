@@ -1,20 +1,21 @@
-namespace ProcSync.Core.Counter;
+
+namespace ProcSync.Core.CounterProblem.Counter;
 
 public class SimpleCounter : ICounter
 {
     public int Count { get; private set; } = 0;
 
-    public void Increment()
+    async public Task Increment()
     {
         Count++;
     }
 
-    public void Decrement()
+    async public Task Decrement()
     {
         Count--;
     }
 
-    public void Reset()
+    async public Task Reset()
     {
         Count = 0;
     }
