@@ -1,11 +1,9 @@
-using ProcSync.Core.Shared;
 
 namespace ProcSync.Core.CounterProblem.Counter;
 
 public class ConcurrentCounter : ICounter
 {
     private readonly ICounter _counter;
-    private readonly Locker _locker = new();
 
     public int Count => _counter.Count;
 
@@ -14,18 +12,27 @@ public class ConcurrentCounter : ICounter
         _counter = counter;
     }
 
-    async public void Increment()
+    public void Increment()
     {
-        _locker.RunLocked(_counter.Increment);
+        lock (_counter)
+        {
+            _counter.Increment();
+        }
     }
 
-    async public void Decrement()
+    public void Decrement()
     {
-        _locker.RunLocked(_counter.Decrement);
+        lock (_counter)
+        {
+            _counter.Decrement();
+        }
     }
 
-    async public void Reset()
+    public void Reset()
     {
-        _locker.RunLocked(_counter.Reset);
+        lock (_counter)
+        {
+            _counter.Reset();
+        }
     }
 }

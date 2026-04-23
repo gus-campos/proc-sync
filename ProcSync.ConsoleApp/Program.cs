@@ -10,10 +10,10 @@ public static class Program
     public static void Main(string[] args)
     {
         TestCounter();
-        // TestProcuctionConsumer();
+        // TestProductionConsumer();
     }
 
-    private static void TestProcuctionConsumer()
+    private static void TestProductionConsumer()
     {
         var buffer = new CircularBuffer<double>(size: 10);
 

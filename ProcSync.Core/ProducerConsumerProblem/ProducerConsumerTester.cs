@@ -5,8 +5,11 @@ namespace ProcSync.Core.ProducerConsumerProblem;
 
 public static class ProducerConsumerTester
 {
-    public static void RunTest(ICircularBuffer<double> buffer, int totalItemsAmount,
-        int productionDelayInMs = 0, int consumptionDelayInMs = 0
+    public static void RunTest(
+        ICircularBuffer<double> buffer,
+        int totalItemsAmount,
+        int productionDelayInMs = 0,
+        int consumptionDelayInMs = 0
     )
     {
         var consuptionTask = Task.Run(
@@ -20,7 +23,7 @@ public static class ProducerConsumerTester
         Task.WaitAll([consuptionTask, producionTask]);
     }
 
-    async private static Task ConsumeMany(
+    private static void ConsumeMany(
         ICircularBuffer<double> buffer,
         int totalItemsAmount,
         int productionDelayInMs
@@ -31,16 +34,16 @@ public static class ProducerConsumerTester
             while (buffer.IsEmpty)
             {
                 Console.WriteLine("Consumer esperando");
-                await Task.Yield();
+                Thread.Yield();
             }
 
             double item = buffer.Get();
             Console.WriteLine($"Consumiu: {item}");
-            await Task.Delay(productionDelayInMs);
+            Thread.Sleep(productionDelayInMs);
         }
     }
 
-    async private static Task ProduceMany(
+    private static void ProduceMany(
         ICircularBuffer<double> buffer,
         int totalItemsAmount,
         int consumptionDelayInMs
@@ -51,13 +54,13 @@ public static class ProducerConsumerTester
             while (buffer.IsFull)
             {
                 Console.WriteLine("Producer esperando");
-                await Task.Yield();
+                Thread.Yield();
             }
 
             double item = index;
             buffer.Put(item);
             Console.WriteLine($"Produziu: {item}");
-            await Task.Delay(consumptionDelayInMs);
+            Thread.Sleep(consumptionDelayInMs);
         }
     }
 }
