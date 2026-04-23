@@ -8,10 +8,10 @@ public class Locker
     private void RunLockedBase(Action action)
     {
         /* 
-        Executa o lambda passado, respeitando o lock do estado.
-        
-        OBS: Enquanto ele não tiver o lock, esta thread cede a execução para 
-        outras threads.
+        * Executa o lambda passado, sem retorno, respeitando o lock do estado.
+        * 
+        * OBS: Enquanto ele não tiver o lock, esta thread cede a execução para 
+        * outras threads.
         */
 
         while (!TryLock())
@@ -34,16 +34,22 @@ public class Locker
         RunLockedBase(action);
     }
 
-    public TResult RunLocked<TResult>(Func<TResult> action)
+    public TResult RunLocked<TResult>(Func<TResult> func)
     {
-        /* Sobrecarga que permite execução de um lambda com retorno */
+        /*
+        * Sobrecarga que permite executar um lambda com retorno.
+        * Internamente adapta a Func para uma Action, armazenando
+        * o resultado em uma variável capturada pelo closure.
+        */
 
         TResult result = default!;
 
-        RunLockedBase(() =>
+        Action adapterAction = () =>
         {
-            result = action();
-        });
+            result = func();
+        };
+
+        RunLockedBase(adapterAction);
 
         return result;
     }
