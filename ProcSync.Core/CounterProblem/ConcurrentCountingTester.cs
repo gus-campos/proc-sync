@@ -3,9 +3,11 @@ using ProcSync.Core.CounterProblem.Counter;
 
 namespace ProcSync.Core.CounterProblem;
 
-public static class ConcurrentCountingTester
+public class ConcurrentCountingTester(
+    ICounter counter
+)
 {
-    public static void RunIncrement(ICounter counter, int stepsAmount)
+    public void RunIncrement(int stepsAmount)
     {
         Parallel.For(0, stepsAmount, (_) =>
         {
@@ -15,7 +17,7 @@ public static class ConcurrentCountingTester
         Console.WriteLine($"Contagem final: {counter.Count}");
     }
 
-    public static void RunIncrementAndDecrement(ICounter counter, int stepsAmount)
+    public void RunIncrementAndDecrement(int stepsAmount)
     {
         Parallel.For(0, stepsAmount, (_) =>
         {

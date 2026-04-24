@@ -1,7 +1,7 @@
 
 namespace ProcSync.Core.ProducerConsumerProblem.CircularBuffer;
 
-public interface ICircularBuffer<TItem>
+public interface IBuffer<TItem>
 {
     public void Put(TItem item);
     public TItem Get();

@@ -1,7 +1,7 @@
 
 namespace ProcSync.Core.ProducerConsumerProblem.CircularBuffer;
 
-public class CircularBuffer<TItem> : ICircularBuffer<TItem>
+public class CircularBuffer<TItem> : IBuffer<TItem>
 {
     private readonly TItem[] _items;
     private readonly int _size;

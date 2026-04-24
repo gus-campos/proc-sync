@@ -1,66 +1,38 @@
 
 using ProcSync.Core.ProducerConsumerProblem.CircularBuffer;
+using ProcSync.Core.ProducerConsumerProblem.Consumer;
+using ProcSync.Core.ProducerConsumerProblem.Producer;
 
 namespace ProcSync.Core.ProducerConsumerProblem;
 
-public static class ProducerConsumerTester
+public class ProducerConsumerTester(
+    IBuffer<double> buffer,
+    IProducer<double> producer,
+    IConsumer<double> consumer
+)
 {
-    public static void RunTest(
-        ICircularBuffer<double> buffer,
-        int totalItemsAmount,
-        int productionDelayInMs = 0,
-        int consumptionDelayInMs = 0
-    )
+    public void Run(int totalItemsAmount)
     {
         var consuptionTask = Task.Run(
-            () => ConsumeMany(buffer, totalItemsAmount, consumptionDelayInMs)
+            () => ConsumeMany(totalItemsAmount)
         );
 
         var producionTask = Task.Run(
-            () => ProduceMany(buffer, totalItemsAmount, productionDelayInMs)
+            () => ProduceMany(totalItemsAmount)
         );
 
         Task.WaitAll([consuptionTask, producionTask]);
     }
 
-    private static void ConsumeMany(
-        ICircularBuffer<double> buffer,
-        int totalItemsAmount,
-        int productionDelayInMs
-    )
+    private void ConsumeMany(int totalItemsAmount)
     {
         for (int index = 0; index < totalItemsAmount; index++)
-        {
-            while (buffer.IsEmpty)
-            {
-                Console.WriteLine("Consumer esperando");
-                Thread.Yield();
-            }
-
-            double item = buffer.Get();
-            Console.WriteLine($"Consumiu: {item}");
-            Thread.Sleep(productionDelayInMs);
-        }
+            consumer.Consume(buffer);
     }
 
-    private static void ProduceMany(
-        ICircularBuffer<double> buffer,
-        int totalItemsAmount,
-        int consumptionDelayInMs
-    )
+    private void ProduceMany(int totalItemsAmount)
     {
         for (int index = 0; index < totalItemsAmount; index++)
-        {
-            while (buffer.IsFull)
-            {
-                Console.WriteLine("Producer esperando");
-                Thread.Yield();
-            }
-
-            double item = index;
-            buffer.Put(item);
-            Console.WriteLine($"Produziu: {item}");
-            Thread.Sleep(consumptionDelayInMs);
-        }
+            producer.Produce(buffer);
     }
 }
