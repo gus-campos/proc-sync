@@ -1,18 +1,15 @@
-﻿namespace ProcSync.ConsoleApp;
+﻿using ProcSync.Core.Domain;
+using ProcSync.Core.Interfaces;
+using ProcSync.Core.Simulators;
 
-using ProcSync.Core.CounterProblem;
-using ProcSync.Core.CounterProblem.Counter;
-using ProcSync.Core.ProducerConsumerProblem;
-using ProcSync.Core.ProducerConsumerProblem.CircularBuffer;
-using ProcSync.Core.ProducerConsumerProblem.Consumer;
-using ProcSync.Core.ProducerConsumerProblem.Producer;
+namespace ProcSync.ConsoleApp;
 
 public static class Program
 {
     public static void Main(string[] args)
     {
-        // TestCounter();
-        TestProducerConsumer();
+        TestCounter();
+        // TestProducerConsumer();
     }
 
     private static void TestProducerConsumer()
@@ -24,16 +21,16 @@ public static class Program
             generator: (lastValue) => lastValue + 1
         );
 
-        IProducer<double> producer = new GeneratorProducerWithLogger<double>(
+        IProducer<double> producer = new LoggingProducer<double>(
             generator,
             delayInMiliseconds: 10
         );
 
-        IConsumer<double> consumer = new ConsumerWithLogger<double>(
+        IConsumer<double> consumer = new LoggingConsumer<double>(
             delayInMiliseconds: 10
         );
 
-        var tester = new ProducerConsumerTester(
+        var tester = new ProducerConsumerSimulator(
             buffer,
             producer,
             consumer
@@ -51,28 +48,28 @@ public static class Program
         // Simple counter - Increment
         {
             var counter = new SimpleCounter();
-            var tester = new ConcurrentCountingTester(counter);
+            var tester = new ConcurrentCountingSimulator(counter);
             tester.RunIncrement(stepsAmount: 1000);
         }
 
         // Simple counter - Increment and Decrement
         {
             var counter = new SimpleCounter();
-            var tester = new ConcurrentCountingTester(counter);
+            var tester = new ConcurrentCountingSimulator(counter);
             tester.RunIncrementAndDecrement(stepsAmount: 1000);
         }
 
         // Concurrent counter - Increment
         {
-            var counter = new ConcurrentCounter(new SimpleCounter());
-            var tester = new ConcurrentCountingTester(counter);
+            var counter = new ConcurrentCounter();
+            var tester = new ConcurrentCountingSimulator(counter);
             tester.RunIncrement(stepsAmount: 1000);
         }
 
         // Concurrent counter - Increment and Decrement
         {
-            var counter = new ConcurrentCounter(new SimpleCounter());
-            var tester = new ConcurrentCountingTester(counter);
+            var counter = new ConcurrentCounter();
+            var tester = new ConcurrentCountingSimulator(counter);
             tester.RunIncrementAndDecrement(stepsAmount: 1000);
         }
     }

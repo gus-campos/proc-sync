@@ -1,4 +1,6 @@
 
+using ProcSync.Core.Interfaces;
+
 namespace ProcSync.Core.Domain;
 
 public class SimpleCounter : ICounter

@@ -5,31 +5,22 @@ namespace ProcSync.Core.Domain;
 
 public class ConcurrentCounter : ICounter
 {
-    private readonly ICounter _counter;
-    private readonly object _lock = new();
+    private int _count = 0;
 
-    public int Count => _counter.Count;
-
-    public ConcurrentCounter(ICounter counter)
-    {
-        _counter = counter;
-    }
+    public int Count => Volatile.Read(ref _count);
 
     public void Increment()
     {
-        lock (_lock)
-            _counter.Increment();
+        Interlocked.Increment(ref _count);
     }
 
     public void Decrement()
     {
-        lock (_lock)
-            _counter.Decrement();
+        Interlocked.Decrement(ref _count);
     }
 
     public void Reset()
     {
-        lock (_lock)
-            _counter.Reset();
+        Interlocked.Exchange(ref _count, 0);
     }
 }
