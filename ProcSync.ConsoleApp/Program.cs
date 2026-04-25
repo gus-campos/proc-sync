@@ -12,7 +12,8 @@ public static class Program
         // TestCounter();
         // TestProducerConsumer();
 
-        TestReadersWriters();   // <-- novo teste para o problema 6.3
+        // TestReadersWriters();
+        TestDiningPhilosophers();
     }
 
     private static void TestProducerConsumer()
@@ -96,5 +97,27 @@ public static class Program
         safeSimulator.Run(readerCount: 5, writerCount: 2, millisecondsToRun: 3000);
 
         Console.WriteLine("===== Fim do teste de Leitores e Escritores =====");
+    }
+
+    private static void TestDiningPhilosophers()
+    {
+        Console.WriteLine("===== Teste Jantar dos Filósofos =====");
+
+        // Versão problemática – demonstra deadlock
+        var deadlockTable = new DeadlockDiningTable();
+        var deadlockSimulator = new DiningPhilosophersSimulator(deadlockTable, "COM DEADLOCK");
+        deadlockSimulator.Run(millisecondsTimeout: 4000); // após 4 segundos cancela
+        // Esperado: zero ou quase zero refeições, porque os filósofos ficam em deadlock
+
+        Thread.Sleep(500);
+        Console.WriteLine();
+
+        // Versão corrigida – evita deadlock
+        var safeTable = new SafeDiningTable();
+        var safeSimulator = new DiningPhilosophersSimulator(safeTable, "SEM DEADLOCK");
+        safeSimulator.Run(millisecondsTimeout: 4000);
+        // Esperado: várias refeições realizadas
+
+        Console.WriteLine("===== Fim do teste Jantar dos Filósofos =====");
     }
 }
