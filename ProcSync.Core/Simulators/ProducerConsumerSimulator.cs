@@ -1,11 +1,9 @@
 
-using ProcSync.Core.ProducerConsumerProblem.CircularBuffer;
-using ProcSync.Core.ProducerConsumerProblem.Consumer;
-using ProcSync.Core.ProducerConsumerProblem.Producer;
+using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.ProducerConsumerProblem;
+namespace ProcSync.Core.Simulators;
 
-public class ProducerConsumerTester(
+public class ProducerConsumerSimulator(
     IBuffer<double> buffer,
     IProducer<double> producer,
     IConsumer<double> consumer

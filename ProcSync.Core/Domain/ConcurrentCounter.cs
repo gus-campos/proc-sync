@@ -1,5 +1,7 @@
 
-namespace ProcSync.Core.CounterProblem.Counter;
+using ProcSync.Core.Interfaces;
+
+namespace ProcSync.Core.Domain;
 
 public class ConcurrentCounter : ICounter
 {

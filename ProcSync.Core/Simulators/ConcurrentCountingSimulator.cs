@@ -1,9 +1,9 @@
 
-using ProcSync.Core.CounterProblem.Counter;
+using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.CounterProblem;
+namespace ProcSync.Core.Simulators;
 
-public class ConcurrentCountingTester(
+public class ConcurrentCountingSimulator(
     ICounter counter
 )
 {

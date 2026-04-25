@@ -1,14 +1,14 @@
 
-using ProcSync.Core.ProducerConsumerProblem.CircularBuffer;
+using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.ProducerConsumerProblem.Producer;
+namespace ProcSync.Core.Domain;
 
-public class GeneratorProducerWithLogger<TItem> : IProducer<TItem>
+public class LoggingProducer<TItem> : IProducer<TItem>
 {
     private readonly int _delayInMiliseconds;
     private readonly IGenerator<TItem> _generator;
 
-    public GeneratorProducerWithLogger(IGenerator<TItem> generator, int delayInMiliseconds)
+    public LoggingProducer(IGenerator<TItem> generator, int delayInMiliseconds)
     {
         _delayInMiliseconds = delayInMiliseconds;
         _generator = generator;

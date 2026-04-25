@@ -1,13 +1,13 @@
 
-using ProcSync.Core.ProducerConsumerProblem.CircularBuffer;
+using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.ProducerConsumerProblem.Consumer;
+namespace ProcSync.Core.Domain;
 
-public class ConsumerWithLogger<TItem> : IConsumer<TItem>
+public class LoggingConsumer<TItem> : IConsumer<TItem>
 {
     private readonly int _delayInMiliseconds;
 
-    public ConsumerWithLogger(int delayInMiliseconds)
+    public LoggingConsumer(int delayInMiliseconds)
     {
         _delayInMiliseconds = delayInMiliseconds;
     }

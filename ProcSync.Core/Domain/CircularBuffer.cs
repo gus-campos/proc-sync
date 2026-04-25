@@ -1,5 +1,7 @@
 
-namespace ProcSync.Core.ProducerConsumerProblem.CircularBuffer;
+using ProcSync.Core.Interfaces;
+
+namespace ProcSync.Core.Domain;
 
 public class CircularBuffer<TItem> : IBuffer<TItem>
 {

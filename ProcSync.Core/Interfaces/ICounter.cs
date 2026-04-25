@@ -1,5 +1,5 @@
 
-namespace ProcSync.Core.CounterProblem.Counter;
+namespace ProcSync.Core.Interfaces;
 
 public interface ICounter
 {

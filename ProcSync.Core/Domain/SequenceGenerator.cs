@@ -1,5 +1,7 @@
 
-namespace ProcSync.Core.ProducerConsumerProblem.Producer;
+using ProcSync.Core.Interfaces;
+
+namespace ProcSync.Core.Domain;
 
 public class SequenceGenerator<TItem> : IGenerator<TItem>
 {
