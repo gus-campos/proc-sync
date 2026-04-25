@@ -5,9 +5,9 @@ namespace ProcSync.Core.Domain;
 
 public class ConcurrentCounter : ICounter
 {
-    private int _count = 0;
+    private volatile int _count = 0;
 
-    public int Count => Volatile.Read(ref _count);
+    public int Count => _count;
 
     public void Increment()
     {
