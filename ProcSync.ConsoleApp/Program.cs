@@ -1,4 +1,5 @@
-﻿using ProcSync.Core.Domain;
+﻿// Ficheiro: ProcSync.ConsoleApp/Program.cs
+using ProcSync.Core.Domain;
 using ProcSync.Core.Interfaces;
 using ProcSync.Core.Simulators;
 
@@ -8,8 +9,10 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        TestCounter();
+        // TestCounter();
         // TestProducerConsumer();
+
+        TestReadersWriters();   // <-- novo teste para o problema 6.3
     }
 
     private static void TestProducerConsumer()
@@ -73,5 +76,25 @@ public static class Program
             tester.RunIncrementAndDecrement(stepsAmount: 1000);
         }
     }
-}
 
+    private static void TestReadersWriters()
+    {
+        Console.WriteLine("===== Teste Leitores e Escritores =====");
+
+        // Versão problemática (sem sincronização)
+        var unsafeResource = new UnsafeResource();
+        var unsafeSimulator = new ReadersWritersSimulator(unsafeResource, "SEM SINCRONIZAÇÃO");
+        unsafeSimulator.Run(readerCount: 5, writerCount: 2, millisecondsToRun: 3000);
+
+        // Pequena pausa para separar os outputs
+        Thread.Sleep(500);
+        Console.WriteLine();
+
+        // Versão corrigida (com ReaderWriterLockSlim)
+        var safeResource = new SafeResource();
+        var safeSimulator = new ReadersWritersSimulator(safeResource, "COM SINCRONIZAÇÃO");
+        safeSimulator.Run(readerCount: 5, writerCount: 2, millisecondsToRun: 3000);
+
+        Console.WriteLine("===== Fim do teste de Leitores e Escritores =====");
+    }
+}
