@@ -1,4 +1,3 @@
-// Ficheiro: ProcSync.Core/Domain/SafeResource.cs
 using System.Threading;
 
 using ProcSync.Core.Interfaces;
@@ -29,11 +28,11 @@ public class SafeResource : IResource
         try
         {
             _value = $"{value}---";
-            Thread.Sleep(30);
+            Thread.Sleep(100);
             _value = $"{value}***";
-            Thread.Sleep(30);
+            Thread.Sleep(100);
             _value = $"{value}###";
-            Thread.Sleep(30);
+            Thread.Sleep(100);
         }
         finally
         {

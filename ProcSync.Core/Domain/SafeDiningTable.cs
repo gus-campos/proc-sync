@@ -1,6 +1,3 @@
-// Ficheiro: ProcSync.Core/Domain/SafeDiningTable.cs
-using System.Threading;
-
 using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Domain;
@@ -29,7 +26,7 @@ public class SafeDiningTable : IDiningTable
             tasks[i] = Task.Run(() => Philosopher(id, cts.Token));
         }
 
-        Task.WaitAll(tasks);  // aqui as tasks terminam quando o token é cancelado
+        Task.WaitAll(tasks);
         Console.WriteLine($"[Solução] Refeições realizadas: {_mealsEaten}");
     }
 
@@ -38,7 +35,6 @@ public class SafeDiningTable : IDiningTable
         int left = id;
         int right = (id + 1) % _philosopherCount;
 
-        // Assimetria: o último filósofo (id 4) pega o direito primeiro
         bool leftFirst = (id != _philosopherCount - 1);
 
         while (!token.IsCancellationRequested)
@@ -50,8 +46,6 @@ public class SafeDiningTable : IDiningTable
             object secondFork = leftFirst ? _forks[right] : _forks[left];
 
             Monitor.Enter(firstFork);
-            // Importante: se não conseguirmos o segundo garfo imediatamente, não há deadlock
-            // pois a assimetria quebra o ciclo.
             Monitor.Enter(secondFork);
 
             try

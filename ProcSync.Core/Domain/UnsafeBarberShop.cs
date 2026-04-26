@@ -1,4 +1,3 @@
-// ProcSync.Core/Domain/UnsafeBarberShop.cs
 using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Domain;
@@ -21,21 +20,18 @@ public class UnsafeBarberShop : IBarberShop
 
         using var cts = new CancellationTokenSource(millisecondsTimeout);
 
-        // Lança todos os clientes concorrentemente para gerar contenção máxima
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < 100; i++)
         {
             int id = i;
             customers.Add(Task.Run(() =>
             {
-                // Pequeno sleep variável (0-1ms) para aumentar ainda mais a aleatoriedade
-                Thread.Sleep(Random.Shared.Next(0, 2));
                 Customer(id);
             }));
         }
 
         Task.WaitAll(customers.ToArray());
-        // Espera um pouco para o barbeiro atender os que ficaram
-        Thread.Sleep(2000);
+        Thread.Sleep(500);
+        cts.Cancel();
     }
 
     private void BarberWork()
@@ -46,34 +42,25 @@ public class UnsafeBarberShop : IBarberShop
             {
                 Console.WriteLine("[UNSAFE] Barbeiro a dormir...");
                 _barberSleeping = true;
-                // Espera ativa – demonstra ineficiência mas não é o foco
-                while (_waitingClients == 0)
-                    Thread.Sleep(10);
+                while (_waitingClients == 0) { }
                 _barberSleeping = false;
             }
 
-            Console.WriteLine($"[UNSAFE] Barbeiro a atender cliente. Clientes à espera: {_waitingClients}");
-            _waitingClients--;  // condição de corrida!
-            Thread.Sleep(200);
+            int current = _waitingClients;
+            Console.WriteLine($"[UNSAFE] Barbeiro a atender. Espera: {current}");
+            _waitingClients--;
         }
     }
 
     private void Customer(int id)
     {
-        Console.WriteLine($"[UNSAFE] Cliente {id} chegou.");
-
-        // Leitura e incremento não atómicos -> condição de corrida
         if (_waitingClients < _chairs)
         {
+            Thread.Sleep(Random.Shared.Next(0, 2));
             _waitingClients++;
             Console.WriteLine($"[UNSAFE] Cliente {id} sentou-se. Espera: {_waitingClients}");
             if (_waitingClients > _chairs)
-                Console.WriteLine($"[UNSAFE] *** ERRO: Número de clientes à espera ({_waitingClients}) excede as cadeiras ({_chairs})! ***");
-            if (_barberSleeping)
-            {
-                Console.WriteLine($"[UNSAFE] Cliente {id} acordou o barbeiro.");
-                _barberSleeping = false;
-            }
+                Console.WriteLine($"[UNSAFE] *** ERRO: Excedeu cadeiras ({_waitingClients} > {_chairs})! ***");
         }
         else
         {

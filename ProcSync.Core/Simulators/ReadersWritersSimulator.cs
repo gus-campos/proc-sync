@@ -1,6 +1,3 @@
-// Ficheiro: ProcSync.Core/Simulators/ReadersWritersSimulator.cs
-using System.Threading;
-
 using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Simulators;
@@ -8,7 +5,7 @@ namespace ProcSync.Core.Simulators;
 public class ReadersWritersSimulator
 {
     private readonly IResource _resource;
-    private readonly string _versionLabel; // para logs
+    private readonly string _versionLabel;
 
     public ReadersWritersSimulator(IResource resource, string versionLabel)
     {
@@ -20,14 +17,12 @@ public class ReadersWritersSimulator
     {
         Console.WriteLine($"--- Iniciando {_versionLabel} ---");
 
-        // CancellationToken para parar ao fim de um tempo
         using var cts = new CancellationTokenSource(millisecondsToRun);
         var token = cts.Token;
 
         var readerTasks = new Task[readerCount];
         var writerTasks = new Task[writerCount];
 
-        // Criar leitores
         for (int i = 0; i < readerCount; i++)
         {
             int id = i;
@@ -37,12 +32,11 @@ public class ReadersWritersSimulator
                 {
                     string val = _resource.Read();
                     Console.WriteLine($"[{_versionLabel}] Leitor {id} leu: \"{val}\"");
-                    Thread.Sleep(100); // simula tempo entre leituras
+                    Thread.Sleep(100);
                 }
             }, token);
         }
 
-        // Criar escritores
         for (int i = 0; i < writerCount; i++)
         {
             int id = i;
@@ -57,7 +51,6 @@ public class ReadersWritersSimulator
             }, token);
         }
 
-        // Espera o tempo de simulação acabar
         Task.WhenAll(readerTasks).Wait();
         Task.WhenAll(writerTasks).Wait();
         Console.WriteLine($"--- Fim {_versionLabel} ---\n");

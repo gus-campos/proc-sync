@@ -1,4 +1,3 @@
-// ProcSync.Core/Domain/SafeBarberShop.cs
 using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Domain;
@@ -35,8 +34,6 @@ public class SafeBarberShop : IBarberShop
 
         Task.WaitAll(customers.ToArray());
 
-        // Depois que todos os clientes terminaram, esperamos um pouco para o barbeiro atender os restantes
-        // e depois cancelamos o token para que o barbeiro saia do Wait
         cts.Cancel();
         lock (_lock)
         {
@@ -52,11 +49,10 @@ public class SafeBarberShop : IBarberShop
         {
             lock (_lock)
             {
-                // Enquanto não houver clientes e não for cancelado, dorme com timeout
                 while (_waitingClients == 0 && !token.IsCancellationRequested)
                 {
                     Console.WriteLine("[SAFE] Barbeiro a dormir...");
-                    Monitor.Wait(_lock, 500); // espera até 500ms ou Pulse
+                    Monitor.Wait(_lock, 500);
                 }
 
                 if (token.IsCancellationRequested) break;
@@ -68,7 +64,6 @@ public class SafeBarberShop : IBarberShop
                 }
             }
 
-            // Corte fora do lock
             Thread.Sleep(200);
         }
     }

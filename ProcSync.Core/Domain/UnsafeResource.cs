@@ -14,10 +14,10 @@ public class UnsafeResource : IResource
     public void Write(string value)
     {
         _value = $"{value}---";
-        Thread.Sleep(30);
+        Thread.Sleep(100);
         _value = $"{value}***";
-        Thread.Sleep(30);
+        Thread.Sleep(100);
         _value = $"{value}###";
-        Thread.Sleep(30);
+        Thread.Sleep(100);
     }
 }

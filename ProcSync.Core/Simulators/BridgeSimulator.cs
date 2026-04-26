@@ -1,4 +1,3 @@
-// ProcSync.Core/Simulators/BridgeSimulator.cs
 using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Simulators;
@@ -14,44 +13,36 @@ public class BridgeSimulator
         _label = label;
     }
 
-    public void Run(int[] northSouthBursts, int[] southNorthBursts, int travelTimeMs, int timeoutMs)
+    public void Run(int northCount, int southCount, int southDelayMs, int travelTimeMs, int spacingMs, int timeoutMs)
     {
-        Console.WriteLine($"--- Iniciando travessia [{_label}] ---");
+        Console.WriteLine($"--- Iniciando travessia [{_label}] (Norte-Sul: {northCount}, Sul-Norte: {southCount}, atraso Sul: {southDelayMs}ms) ---");
         using var cts = new CancellationTokenSource(timeoutMs);
         var tasks = new List<Task>();
 
-        // Lança rajadas de veículos Norte-Sul
-        foreach (int count in northSouthBursts)
+        for (int i = 0; i < northCount; i++)
         {
-            for (int i = 0; i < count; i++)
+            int id = i;
+            tasks.Add(Task.Run(async () =>
             {
-                tasks.Add(Task.Run(() =>
-                {
-                    if (cts.Token.IsCancellationRequested) return;
-                    _bridge.Enter("Norte-Sul");
-                    Thread.Sleep(travelTimeMs); // simula travessia
-                    _bridge.Exit();
-                }));
-                Thread.Sleep(10); // pequeno intervalo entre veículos da mesma rajada
-            }
-            Thread.Sleep(100); // pausa entre rajadas
+                if (cts.Token.IsCancellationRequested) return;
+                await Task.Delay(i * spacingMs, cts.Token);
+                _bridge.Enter("Norte-Sul");
+                Thread.Sleep(travelTimeMs);
+                _bridge.Exit();
+            }, cts.Token));
         }
 
-        // Lança rajadas de veículos Sul-Norte
-        foreach (int count in southNorthBursts)
+        for (int i = 0; i < southCount; i++)
         {
-            for (int i = 0; i < count; i++)
+            int id = i;
+            tasks.Add(Task.Run(async () =>
             {
-                tasks.Add(Task.Run(() =>
-                {
-                    if (cts.Token.IsCancellationRequested) return;
-                    _bridge.Enter("Sul-Norte");
-                    Thread.Sleep(travelTimeMs);
-                    _bridge.Exit();
-                }));
-                Thread.Sleep(10);
-            }
-            Thread.Sleep(100);
+                if (cts.Token.IsCancellationRequested) return;
+                await Task.Delay(southDelayMs + i * spacingMs, cts.Token);
+                _bridge.Enter("Sul-Norte");
+                Thread.Sleep(travelTimeMs);
+                _bridge.Exit();
+            }, cts.Token));
         }
 
         Task.WaitAll(tasks.ToArray());

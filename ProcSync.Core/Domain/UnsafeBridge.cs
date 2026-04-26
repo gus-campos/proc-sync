@@ -1,4 +1,3 @@
-// ProcSync.Core/Domain/UnsafeBridge.cs
 using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Domain;
@@ -13,7 +12,6 @@ public class UnsafeBridge : IBridge
     {
         lock (_bridgeLock)
         {
-            // Se a ponte estiver livre ou for o mesmo sentido, entra
             if (_currentDirection == null || _currentDirection == direction)
             {
                 _currentDirection = direction;
@@ -22,7 +20,6 @@ public class UnsafeBridge : IBridge
             }
             else
             {
-                // Bloqueia até que a ponte esteja livre (mas não há garantia de que o outro sentido será atendido)
                 while (_currentDirection != direction && _vehiclesOnBridge > 0)
                 {
                     Monitor.Wait(_bridgeLock);
@@ -46,7 +43,7 @@ public class UnsafeBridge : IBridge
             if (_vehiclesOnBridge == 0)
             {
                 _currentDirection = null;
-                Monitor.PulseAll(_bridgeLock); // acorda todos os que esperam
+                Monitor.PulseAll(_bridgeLock);
             }
         }
     }

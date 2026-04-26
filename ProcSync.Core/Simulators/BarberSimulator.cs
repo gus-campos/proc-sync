@@ -1,4 +1,3 @@
-// ProcSync.Core/Simulators/BarberSimulator.cs
 using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Simulators;

@@ -1,4 +1,3 @@
-// Ficheiro: ProcSync.Core/Simulators/DiningPhilosophersSimulator.cs
 using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Simulators;

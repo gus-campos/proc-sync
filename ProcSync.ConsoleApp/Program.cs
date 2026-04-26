@@ -1,5 +1,4 @@
-﻿// Ficheiro: ProcSync.ConsoleApp/Program.cs
-using ProcSync.Core.Domain;
+﻿using ProcSync.Core.Domain;
 using ProcSync.Core.Interfaces;
 using ProcSync.Core.Simulators;
 
@@ -12,7 +11,7 @@ public static class Program
         // TestCounter();
         // TestProducerConsumer();
 
-        // TestReadersWriters();
+        //TestReadersWriters();
         //TestDiningPhilosophers();
         //TestSleepingBarber();
         TestOneWayBridge();
@@ -84,41 +83,33 @@ public static class Program
     {
         Console.WriteLine("===== Teste Leitores e Escritores =====");
 
-        // Versão problemática (sem sincronização)
         var unsafeResource = new UnsafeResource();
         var unsafeSimulator = new ReadersWritersSimulator(unsafeResource, "SEM SINCRONIZAÇÃO");
-        unsafeSimulator.Run(readerCount: 5, writerCount: 2, millisecondsToRun: 3000);
+        unsafeSimulator.Run(readerCount: 5, writerCount: 2, millisecondsToRun: 5000);
 
-        // Pequena pausa para separar os outputs
         Thread.Sleep(500);
         Console.WriteLine();
 
-        // Versão corrigida (com ReaderWriterLockSlim)
         var safeResource = new SafeResource();
         var safeSimulator = new ReadersWritersSimulator(safeResource, "COM SINCRONIZAÇÃO");
-        safeSimulator.Run(readerCount: 5, writerCount: 2, millisecondsToRun: 3000);
+        safeSimulator.Run(readerCount: 5, writerCount: 2, millisecondsToRun: 5000);
 
         Console.WriteLine("===== Fim do teste de Leitores e Escritores =====");
     }
-
     private static void TestDiningPhilosophers()
     {
         Console.WriteLine("===== Teste Jantar dos Filósofos =====");
 
-        // Versão problemática – demonstra deadlock
         var deadlockTable = new DeadlockDiningTable();
         var deadlockSimulator = new DiningPhilosophersSimulator(deadlockTable, "COM DEADLOCK");
-        deadlockSimulator.Run(millisecondsTimeout: 4000); // após 4 segundos cancela
-        // Esperado: zero ou quase zero refeições, porque os filósofos ficam em deadlock
+        deadlockSimulator.Run(millisecondsTimeout: 4000); // após 4 segundos cancela o teste, pois espera-se que haja deadlock e os filósofos parem de comer
 
         Thread.Sleep(500);
         Console.WriteLine();
 
-        // Versão corrigida – evita deadlock
         var safeTable = new SafeDiningTable();
         var safeSimulator = new DiningPhilosophersSimulator(safeTable, "SEM DEADLOCK");
         safeSimulator.Run(millisecondsTimeout: 4000);
-        // Esperado: várias refeições realizadas
 
         Console.WriteLine("===== Fim do teste Jantar dos Filósofos =====");
     }
@@ -127,7 +118,6 @@ public static class Program
     {
         Console.WriteLine("===== Teste Barbeiro Sonolento =====");
 
-        // Versão problemática (sem sincronização)
         var unsafeShop = new UnsafeBarberShop(chairs: 5);
         var unsafeSim = new BarberSimulator(unsafeShop, "SEM SINCRONIZAÇÃO");
         unsafeSim.Run(timeoutMs: 5000); // 5 segundos
@@ -135,7 +125,6 @@ public static class Program
         Thread.Sleep(500);
         Console.WriteLine();
 
-        // Versão corrigida (com Monitor.Wait/Pulse)
         var safeShop = new SafeBarberShop(chairs: 5);
         var safeSim = new BarberSimulator(safeShop, "COM SINCRONIZAÇÃO");
         safeSim.Run(timeoutMs: 5000);
@@ -146,28 +135,16 @@ public static class Program
     {
         Console.WriteLine("===== Teste Ponte de Mão Única =====");
 
-        // Versão problemática – rajadas assimétricas para provocar inanição
         var unsafeBridge = new UnsafeBridge();
         var unsafeSim = new BridgeSimulator(unsafeBridge, "SEM ALTERNÂNCIA");
-        unsafeSim.Run(
-            northSouthBursts: new[] { 8 },   // rajada de 8 Norte-Sul
-            southNorthBursts: new[] { 2 },   // apenas 2 Sul-Norte
-            travelTimeMs: 80,
-            timeoutMs: 10000
-        );
+        unsafeSim.Run(northCount: 15, southCount: 5, southDelayMs: 200, travelTimeMs: 80, spacingMs: 20, timeoutMs: 10000);
 
         Thread.Sleep(500);
         Console.WriteLine();
 
-        // Versão corrigida – mesmas rajadas, mas com alternância forçada
         var safeBridge = new SafeBridge();
         var safeSim = new BridgeSimulator(safeBridge, "COM ALTERNÂNCIA");
-        safeSim.Run(
-            northSouthBursts: new[] { 8 },
-            southNorthBursts: new[] { 2 },
-            travelTimeMs: 80,
-            timeoutMs: 10000
-        );
+        safeSim.Run(northCount: 15, southCount: 5, southDelayMs: 200, travelTimeMs: 80, spacingMs: 20, timeoutMs: 10000);
 
         Console.WriteLine("===== Fim do teste da ponte =====");
     }
