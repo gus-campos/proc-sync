@@ -6,10 +6,14 @@ public abstract class AsyncAgent(int timeToCheckInMs)
     private Task? _taskRunning = null;
     private bool _shouldStop = false;
 
+    public bool IsRunning => _taskRunning != null;
+
     async public Task StartAsync()
     {
         if (_taskRunning != null)
-            return;
+        {
+            throw new Exception("Não é possível iniciar agente que já está executando");
+        }
 
         _taskRunning = RunLoopAsync();
 
@@ -20,9 +24,12 @@ public abstract class AsyncAgent(int timeToCheckInMs)
     {
         _shouldStop = true;
 
-        if (_taskRunning != null)
-            await _taskRunning;
+        if (_taskRunning == null)
+        {
+            throw new Exception("Não é possível encerrar agente que não está executando");
+        }
 
+        await _taskRunning;
         _taskRunning = null;
         _shouldStop = false;
     }
