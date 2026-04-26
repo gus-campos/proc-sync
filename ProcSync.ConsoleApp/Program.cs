@@ -13,7 +13,9 @@ public static class Program
         // TestProducerConsumer();
 
         // TestReadersWriters();
-        TestDiningPhilosophers();
+        //TestDiningPhilosophers();
+
+        TestSleepingBarber();
     }
 
     private static void TestProducerConsumer()
@@ -119,5 +121,25 @@ public static class Program
         // Esperado: várias refeições realizadas
 
         Console.WriteLine("===== Fim do teste Jantar dos Filósofos =====");
+    }
+
+    private static void TestSleepingBarber()
+    {
+        Console.WriteLine("===== Teste Barbeiro Sonolento =====");
+
+        // Versão problemática (sem sincronização)
+        var unsafeShop = new UnsafeBarberShop(chairs: 5);
+        var unsafeSim = new BarberSimulator(unsafeShop, "SEM SINCRONIZAÇÃO");
+        unsafeSim.Run(timeoutMs: 5000); // 5 segundos
+
+        Thread.Sleep(500);
+        Console.WriteLine();
+
+        // Versão corrigida (com Monitor.Wait/Pulse)
+        var safeShop = new SafeBarberShop(chairs: 5);
+        var safeSim = new BarberSimulator(safeShop, "COM SINCRONIZAÇÃO");
+        safeSim.Run(timeoutMs: 5000);
+
+        Console.WriteLine("===== Fim do teste Barbeiro Sonolento =====");
     }
 }
