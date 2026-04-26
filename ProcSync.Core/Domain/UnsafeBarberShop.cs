@@ -5,7 +5,7 @@ namespace ProcSync.Core.Domain;
 public class UnsafeBarberShop(int chairs = 5) : IBarberShop
 {
     private int _waitingClients = 0;
-    private bool _barberSleeping = true;
+    // private bool _barberSleeping = true;
 
     public void Run(int millisecondsTimeout)
     {
@@ -35,9 +35,9 @@ public class UnsafeBarberShop(int chairs = 5) : IBarberShop
             if (_waitingClients == 0)
             {
                 Console.WriteLine("[UNSAFE] Barbeiro a dormir...");
-                _barberSleeping = true;
+                // _barberSleeping = true;
                 while (_waitingClients == 0) { }
-                _barberSleeping = false;
+                // _barberSleeping = false;
             }
 
             int current = _waitingClients;
