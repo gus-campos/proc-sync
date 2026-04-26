@@ -7,7 +7,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/ProcSync.ConsoleApp/bin/Debug/net8.0/ProcSync.ConsoleApp.dll",
-            "args": [],
+            "args": ["producer-consumer"],
             "cwd": "${workspaceFolder}/ProcSync.ConsoleApp",
             "console": "internalConsole",
             "stopAtEntry": false

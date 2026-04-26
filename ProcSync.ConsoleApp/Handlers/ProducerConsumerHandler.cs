@@ -1,25 +1,31 @@
 using ProcSync.Core.Domain;
-using ProcSync.Core.Interfaces;
 using ProcSync.Core.Simulators;
 
 namespace ProcSync.ConsoleApp.Handlers;
 
-public static class ProducerConsumerHandler
+public class ProducerConsumerHandler()
 {
-    public static void Run(int bufferSize, int totalItems)
+    async public static Task Run(
+        int bufferSize,
+        int totalTimeInMs,
+        int timeToCheckInMs,
+        int produceTimeInMs,
+        int consumeTimeInMs
+    )
     {
-        Console.WriteLine($"Buffer: {bufferSize}");
-        Console.WriteLine($"Items: {totalItems}");
+        Console.WriteLine($"\nTamanho do buffer: {bufferSize}");
+        Console.WriteLine($"Tempo total: {totalTimeInMs / 1000.0} s");
+        Console.WriteLine($"Tempo pra checagem: {totalTimeInMs}");
+        Console.WriteLine($"Tempo para produzir: {produceTimeInMs}");
+        Console.WriteLine($"Tempo para consumir: {consumeTimeInMs}\n");
 
         var buffer = new CircularBuffer<double>(bufferSize);
+        var indexGenerator = new SequenceGenerator<double>(0, last => last + 1);
+        var producer = new SimpleProducer<double>(buffer, indexGenerator, produceTimeInMs, timeToCheckInMs);
+        var consumer = new SimpleConsumer<double>(buffer, consumeTimeInMs, timeToCheckInMs);
 
-        IGenerator<double> generator = new SequenceGenerator<double>(0, last => last + 1);
+        var simulator = new ProducerConsumerSimulator(producer, consumer);
 
-        IProducer<double> producer = new LoggingProducer<double>(generator, 10);
-        IConsumer<double> consumer = new LoggingConsumer<double>(10);
-
-        var tester = new ProducerConsumerSimulator(buffer, producer, consumer);
-
-        tester.Run(totalItems);
+        await simulator.Run(totalTimeInMs);
     }
 }
