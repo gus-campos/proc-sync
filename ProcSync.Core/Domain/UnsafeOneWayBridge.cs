@@ -2,13 +2,19 @@ using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Domain;
 
-public class UnsafeBridge : IBridge
+public enum BridgeDirection
+{
+    NorthToSouth,
+    SouthToNorth
+}
+
+public class UnsafeOneWayBridge : IOneWayBridge
 {
     private readonly object _bridgeLock = new();
-    private string? _currentDirection = null;
+    private BridgeDirection? _currentDirection = null;
     private int _vehiclesOnBridge = 0;
 
-    public void Enter(string direction)
+    public void Enter(BridgeDirection direction)
     {
         lock (_bridgeLock)
         {

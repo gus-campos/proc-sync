@@ -2,20 +2,11 @@ using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Simulators;
 
-public class ReadersWritersSimulator
+public class ReadersWritersSimulator(IResource resource, string versionLabel)
 {
-    private readonly IResource _resource;
-    private readonly string _versionLabel;
-
-    public ReadersWritersSimulator(IResource resource, string versionLabel)
-    {
-        _resource = resource;
-        _versionLabel = versionLabel;
-    }
-
     public void Run(int readerCount, int writerCount, int millisecondsToRun)
     {
-        Console.WriteLine($"--- Iniciando {_versionLabel} ---");
+        Console.WriteLine($"--- Iniciando {versionLabel} ---");
 
         using var cts = new CancellationTokenSource(millisecondsToRun);
         var token = cts.Token;
@@ -30,8 +21,8 @@ public class ReadersWritersSimulator
             {
                 while (!token.IsCancellationRequested)
                 {
-                    string val = _resource.Read();
-                    Console.WriteLine($"[{_versionLabel}] Leitor {id} leu: \"{val}\"");
+                    string val = resource.Read();
+                    Console.WriteLine($"[{versionLabel}] Leitor {id} leu: \"{val}\"");
                     Thread.Sleep(100);
                 }
             }, token);
@@ -44,8 +35,8 @@ public class ReadersWritersSimulator
             {
                 while (!token.IsCancellationRequested)
                 {
-                    _resource.Write($"W{id}");
-                    Console.WriteLine($"[{_versionLabel}] Escritor {id} escreveu.");
+                    resource.Write($"W{id}");
+                    Console.WriteLine($"[{versionLabel}] Escritor {id} escreveu.");
                     Thread.Sleep(500);
                 }
             }, token);
@@ -53,6 +44,6 @@ public class ReadersWritersSimulator
 
         Task.WhenAll(readerTasks).Wait();
         Task.WhenAll(writerTasks).Wait();
-        Console.WriteLine($"--- Fim {_versionLabel} ---\n");
+        Console.WriteLine($"--- Fim {versionLabel} ---\n");
     }
 }

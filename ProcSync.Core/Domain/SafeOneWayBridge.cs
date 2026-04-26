@@ -2,22 +2,26 @@ using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Domain;
 
-public class SafeBridge : IBridge
+public class SafeOneWayBridge : IOneWayBridge
 {
     private readonly object _lock = new();
-    private string? _currentDirection = null;
+    private BridgeDirection? _currentDirection = null;
     private int _vehiclesOnBridge = 0;
     private int _waitingNorth = 0;
     private int _waitingSouth = 0;
 
-    public void Enter(string direction)
+    public void Enter(BridgeDirection direction)
     {
         lock (_lock)
         {
-            if (direction == "Norte-Sul")
+            if (direction == BridgeDirection.NorthToSouth)
+            {
                 _waitingNorth++;
+            }
             else
+            {
                 _waitingSouth++;
+            }
 
             while (_currentDirection != null && _currentDirection != direction)
             {
@@ -27,10 +31,14 @@ public class SafeBridge : IBridge
             _currentDirection = direction;
             _vehiclesOnBridge++;
 
-            if (direction == "Norte-Sul")
+            if (direction == BridgeDirection.NorthToSouth)
+            {
                 _waitingNorth--;
+            }
             else
+            {
                 _waitingSouth--;
+            }
 
             Console.WriteLine($"[SAFE] Veículo entrou na ponte. Direção: {direction}. Veículos na ponte: {_vehiclesOnBridge}");
         }
@@ -45,13 +53,13 @@ public class SafeBridge : IBridge
 
             if (_vehiclesOnBridge == 0)
             {
-                if (_currentDirection == "Norte-Sul" && _waitingSouth > 0)
+                if (_currentDirection == BridgeDirection.NorthToSouth && _waitingSouth > 0)
                 {
                     Console.WriteLine("[SAFE] *** Trocando sentido para Sul-Norte ***");
                     _currentDirection = null;
                     Monitor.PulseAll(_lock);
                 }
-                else if (_currentDirection == "Sul-Norte" && _waitingNorth > 0)
+                else if (_currentDirection == BridgeDirection.SouthToNorth && _waitingNorth > 0)
                 {
                     Console.WriteLine("[SAFE] *** Trocando sentido para Norte-Sul ***");
                     _currentDirection = null;

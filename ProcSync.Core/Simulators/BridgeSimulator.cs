@@ -1,21 +1,13 @@
+using ProcSync.Core.Domain;
 using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Simulators;
 
-public class BridgeSimulator
+public class BridgeSimulator(IOneWayBridge bridge, string label)
 {
-    private readonly IBridge _bridge;
-    private readonly string _label;
-
-    public BridgeSimulator(IBridge bridge, string label)
-    {
-        _bridge = bridge;
-        _label = label;
-    }
-
     public void Run(int northCount, int southCount, int southDelayMs, int travelTimeMs, int spacingMs, int timeoutMs)
     {
-        Console.WriteLine($"--- Iniciando travessia [{_label}] (Norte-Sul: {northCount}, Sul-Norte: {southCount}, atraso Sul: {southDelayMs}ms) ---");
+        Console.WriteLine($"--- Iniciando travessia [{label}] (Norte-Sul: {northCount}, Sul-Norte: {southCount}, atraso Sul: {southDelayMs}ms) ---");
         using var cts = new CancellationTokenSource(timeoutMs);
         var tasks = new List<Task>();
 
@@ -26,9 +18,9 @@ public class BridgeSimulator
             {
                 if (cts.Token.IsCancellationRequested) return;
                 await Task.Delay(i * spacingMs, cts.Token);
-                _bridge.Enter("Norte-Sul");
+                bridge.Enter(BridgeDirection.NorthToSouth);
                 Thread.Sleep(travelTimeMs);
-                _bridge.Exit();
+                bridge.Exit();
             }, cts.Token));
         }
 
@@ -39,13 +31,13 @@ public class BridgeSimulator
             {
                 if (cts.Token.IsCancellationRequested) return;
                 await Task.Delay(southDelayMs + i * spacingMs, cts.Token);
-                _bridge.Enter("Sul-Norte");
+                bridge.Enter(BridgeDirection.SouthToNorth);
                 Thread.Sleep(travelTimeMs);
-                _bridge.Exit();
+                bridge.Exit();
             }, cts.Token));
         }
 
         Task.WaitAll(tasks.ToArray());
-        Console.WriteLine($"--- Fim da travessia [{_label}] ---\n");
+        Console.WriteLine($"--- Fim da travessia [{label}] ---\n");
     }
 }

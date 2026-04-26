@@ -3,9 +3,7 @@ using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Simulators;
 
-public class ConcurrentCountingSimulator(
-    ICounter counter
-)
+public class ConcurrentCountingSimulator(ICounter counter)
 {
     public void RunIncrement(int stepsAmount)
     {
