@@ -2,16 +2,29 @@
 
 ## Descrição
 
-Projeto em C# desenvolvido com .NET para sincronização de processos.
+Projeto desenvolvido com C# para simulação de sincronização de processos.
 
----
+## Estrutura do projeto
+
+- `ProcSync.ConsoleApp` → interface de linha de comando (CLI)
+- `ProcSync.Core` → lógica principal da aplicação
+- `ProcSync.Tests` → testes automatizados
+
+## Padronização de código
+
+O projeto utiliza:
+
+- `.editorconfig` para padronização de estilo
+- Allman style (chaves em nova linha)
+- PascalCase para membros públicos (métodos e propriedades)
+- camelCase para variáveis locais
+- \_camelCase para campos privados
+- IPascalCase para interfaces
 
 ## Pré-requisitos desenvolvimento
 
-- [.NET SDK 8.0+](https://dotnet.microsoft.com/)
+- [.NET SDK 8.0+](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 - Git
-
----
 
 ## Como executar o projeto
 
@@ -32,6 +45,7 @@ dotnet test ProcSync.Tests
 ```bash
 dotnet build
 ```
+<<<<<<< Updated upstream
 
 ---
 
@@ -94,3 +108,5 @@ O projeto utiliza:
 - camelCase para variáveis locais
 - \_camelCase para campos privados
 - IPascalCase para interfaces
+=======
+>>>>>>> Stashed changes
