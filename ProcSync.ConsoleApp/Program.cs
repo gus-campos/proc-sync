@@ -14,8 +14,8 @@ public static class Program
 
         // TestReadersWriters();
         //TestDiningPhilosophers();
-
-        TestSleepingBarber();
+        //TestSleepingBarber();
+        TestOneWayBridge();
     }
 
     private static void TestProducerConsumer()
@@ -141,5 +141,34 @@ public static class Program
         safeSim.Run(timeoutMs: 5000);
 
         Console.WriteLine("===== Fim do teste Barbeiro Sonolento =====");
+    }
+    private static void TestOneWayBridge()
+    {
+        Console.WriteLine("===== Teste Ponte de Mão Única =====");
+
+        // Versão problemática – rajadas assimétricas para provocar inanição
+        var unsafeBridge = new UnsafeBridge();
+        var unsafeSim = new BridgeSimulator(unsafeBridge, "SEM ALTERNÂNCIA");
+        unsafeSim.Run(
+            northSouthBursts: new[] { 8 },   // rajada de 8 Norte-Sul
+            southNorthBursts: new[] { 2 },   // apenas 2 Sul-Norte
+            travelTimeMs: 80,
+            timeoutMs: 10000
+        );
+
+        Thread.Sleep(500);
+        Console.WriteLine();
+
+        // Versão corrigida – mesmas rajadas, mas com alternância forçada
+        var safeBridge = new SafeBridge();
+        var safeSim = new BridgeSimulator(safeBridge, "COM ALTERNÂNCIA");
+        safeSim.Run(
+            northSouthBursts: new[] { 8 },
+            southNorthBursts: new[] { 2 },
+            travelTimeMs: 80,
+            timeoutMs: 10000
+        );
+
+        Console.WriteLine("===== Fim do teste da ponte =====");
     }
 }
