@@ -3,6 +3,6 @@ namespace ProcSync.Core.Interfaces;
 
 public interface IProducer<TItem>
 {
-    public Task StartAsync();
+    public void Start();
     public Task StopAsync();
 }

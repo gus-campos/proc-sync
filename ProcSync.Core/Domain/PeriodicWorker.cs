@@ -1,34 +1,37 @@
 
 namespace ProcSync.Core.Domain;
 
-public abstract class AsyncAgent(int timeToCheckInMs)
+public class PeriodicWorker(
+    Func<Task> workToDo,
+    int timeToCheckInMs
+)
 {
     private Task? _taskRunning = null;
     private bool _shouldStop = false;
 
+    private readonly int _timeToCheckInMs = timeToCheckInMs;
+    private readonly Func<Task> _workToDo = workToDo;
+
     public bool IsRunning => _taskRunning != null;
 
-    async public Task StartAsync()
+    public void Start()
     {
         if (_taskRunning != null)
         {
             throw new Exception("Não é possível iniciar agente que já está executando");
         }
 
-        _taskRunning = RunLoopAsync();
-
-        return;
+        _taskRunning = Task.Run(RunLoopAsync);
     }
 
     async public Task StopAsync()
     {
-        _shouldStop = true;
-
         if (_taskRunning == null)
         {
             throw new Exception("Não é possível encerrar agente que não está executando");
         }
 
+        _shouldStop = true;
         await _taskRunning;
         _taskRunning = null;
         _shouldStop = false;
@@ -40,18 +43,16 @@ public abstract class AsyncAgent(int timeToCheckInMs)
         {
             // await Task.Delay(0) roda sincronamente, então para forçar 
             // execução assíncrona é usado o yield nesses casos
-            if (timeToCheckInMs > 0)
+            if (_timeToCheckInMs > 0)
             {
-                await Task.Delay(timeToCheckInMs);
+                await Task.Delay(_timeToCheckInMs);
             }
             else
             {
                 await Task.Yield();
             }
 
-            await Process();
+            await _workToDo();
         }
     }
-
-    abstract protected Task Process();
 }

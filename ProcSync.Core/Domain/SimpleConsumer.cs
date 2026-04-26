@@ -3,22 +3,43 @@ using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Domain;
 
-public class SimpleConsumer<TItem>(
-    IBuffer<TItem> buffer,
-    int timeToConsumeInMs,
-    int timeToCheckInMs
-) : AsyncAgent(timeToCheckInMs), IConsumer<TItem>
+public class SimpleConsumer<TItem> : IConsumer<TItem>
 {
-    async override protected Task Process()
+    private readonly IBuffer<TItem> _buffer;
+    private readonly int _timeToConsumeInMs;
+    private readonly PeriodicWorker _periodicWorker;
+
+    public SimpleConsumer(
+        IBuffer<TItem> buffer,
+        int timeToConsumeInMs,
+        int timeToCheckInMs
+    )
     {
-        if (!buffer.IsEmpty)
+        _buffer = buffer;
+        _timeToConsumeInMs = timeToConsumeInMs;
+        _periodicWorker = new PeriodicWorker(TryToConsume, timeToCheckInMs);
+    }
+
+    public void Start()
+    {
+        _periodicWorker.Start();
+    }
+
+    async public Task StopAsync()
+    {
+        await _periodicWorker.StopAsync();
+    }
+
+    async private Task TryToConsume()
+    {
+        if (!_buffer.IsEmpty)
             await Consume();
     }
 
     async private Task Consume()
     {
-        var item = buffer.Get();
-        await Task.Delay(timeToConsumeInMs);
+        var item = _buffer.Get();
+        await Task.Delay(_timeToConsumeInMs);
         Console.WriteLine($"Consumiu: {item}");
     }
 }

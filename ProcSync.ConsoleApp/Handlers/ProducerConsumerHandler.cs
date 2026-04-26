@@ -20,11 +20,19 @@ public class ProducerConsumerHandler()
         Console.WriteLine($"Tempo para consumir: {consumeTimeInMs}\n");
 
         var buffer = new CircularBuffer<double>(bufferSize);
-        var indexGenerator = new SequenceGenerator<double>(0, last => last + 1);
-        var producer = new SimpleProducer<double>(buffer, indexGenerator, produceTimeInMs, timeToCheckInMs);
-        var consumer = new SimpleConsumer<double>(buffer, consumeTimeInMs, timeToCheckInMs);
 
-        var simulator = new ProducerConsumerSimulator(producer, consumer);
+        // Producers
+        var indexGenerator = new SequenceGenerator<double>(0, last => last + 1);
+        var producers = Enumerable.Range(0, 1).Select(
+            _ => new SimpleProducer<double>(buffer, indexGenerator, produceTimeInMs, timeToCheckInMs)
+        );
+
+        // Consumers
+        var consumers = Enumerable.Range(0, 1).Select(
+            _ => new SimpleConsumer<double>(buffer, consumeTimeInMs, timeToCheckInMs)
+        );
+
+        var simulator = new ProducerConsumerSimulator(producers, consumers);
 
         await simulator.Run(totalTimeInMs);
     }

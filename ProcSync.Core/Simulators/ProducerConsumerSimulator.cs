@@ -4,20 +4,24 @@ using ProcSync.Core.Interfaces;
 namespace ProcSync.Core.Simulators;
 
 public class ProducerConsumerSimulator(
-    IProducer<double> producer,
-    IConsumer<double> consumer
+    IEnumerable<IProducer<double>> producers,
+    IEnumerable<IConsumer<double>> consumers
 )
 {
     async public Task Run(int totalTimeInMs)
     {
-        await producer.StartAsync();
-        await consumer.StartAsync();
+        foreach (var producer in producers)
+            producer.Start();
+
+        foreach (var consumer in consumers)
+            consumer.Start();
 
         await Task.Delay(totalTimeInMs);
 
-        var stopProducerTask = producer.StopAsync();
-        var stopConsumerTask = consumer.StopAsync();
-
-        await Task.WhenAll([stopProducerTask, stopConsumerTask]);
+        // Esperar tudo terminar
+        await Task.WhenAll([
+            .. producers.Select(p => p.StopAsync()),
+            .. consumers.Select(c => c.StopAsync())
+        ]);
     }
 }

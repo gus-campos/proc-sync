@@ -1,7 +1,5 @@
 using System.CommandLine;
 
-using ProcSync.ConsoleApp.Cli.Commands;
-
 namespace ProcSync.ConsoleApp.Commands;
 
 public static class RootCommandFactory
