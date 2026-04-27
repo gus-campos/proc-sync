@@ -9,32 +9,37 @@ public static class CounterHandler
     {
         Console.WriteLine($"Passos: {steps}\n");
 
-        // Simples - Incremento
-        {
-            var counter = new SimpleCounter();
-            var tester = new ConcurrentCountingSimulator(counter);
-            tester.RunIncrement(steps);
-        }
+        Run_Simple_Increment(steps);
+        Run_Simple_IncrementDecrement(steps);
+        Run_Concurrent_Increment(steps);
+        Run_Concurrent_IncrementDecrement(steps);
+    }
 
-        // Simples - Incremento e decremento
-        {
-            var counter = new SimpleCounter();
-            var tester = new ConcurrentCountingSimulator(counter);
-            tester.RunIncrementAndDecrement(steps);
-        }
+    private static void Run_Simple_Increment(int steps)
+    {
+        var counter = new SimpleCounter();
+        var simulator = new ConcurrentCountingSimulator(counter);
+        simulator.RunIncrement(steps);
+    }
 
-        // Simples - Incremento
-        {
-            var counter = new ConcurrentCounter();
-            var tester = new ConcurrentCountingSimulator(counter);
-            tester.RunIncrement(steps);
-        }
+    private static void Run_Simple_IncrementDecrement(int steps)
+    {
+        var counter = new SimpleCounter();
+        var simulator = new ConcurrentCountingSimulator(counter);
+        simulator.RunIncrementAndDecrement(steps);
+    }
 
-        // Simples - Incremento e decremento
-        {
-            var counter = new ConcurrentCounter();
-            var tester = new ConcurrentCountingSimulator(counter);
-            tester.RunIncrementAndDecrement(steps);
-        }
+    private static void Run_Concurrent_Increment(int steps)
+    {
+        var counter = new ConcurrentCounter();
+        var simulator = new ConcurrentCountingSimulator(counter);
+        simulator.RunIncrement(steps);
+    }
+
+    private static void Run_Concurrent_IncrementDecrement(int steps)
+    {
+        var counter = new ConcurrentCounter();
+        var simulator = new ConcurrentCountingSimulator(counter);
+        simulator.RunIncrementAndDecrement(steps);
     }
 }

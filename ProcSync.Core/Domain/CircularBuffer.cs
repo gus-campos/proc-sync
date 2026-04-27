@@ -7,9 +7,10 @@ public class CircularBuffer<TItem> : IBuffer<TItem>
 {
     private readonly TItem[] _items;
     private readonly int _size;
-    private int _count = 0;
+
     private int _inIndex = 0;
     private int _outIndex = 0;
+    private int _count = 0;
 
     public bool IsEmpty => _count == 0;
     public bool IsFull => _count == _size;
@@ -23,7 +24,7 @@ public class CircularBuffer<TItem> : IBuffer<TItem>
     public void Put(TItem item)
     {
         if (IsFull)
-            throw new Exception("Não é possível inserir: buffer cheio");
+            throw new Exception("Não é possível inserir em buffer cheio");
 
         _items[_inIndex] = item;
         IncrementInIndex();
@@ -33,7 +34,7 @@ public class CircularBuffer<TItem> : IBuffer<TItem>
     public TItem Get()
     {
         if (IsEmpty)
-            throw new Exception("Não é possível obter: buffer vazio");
+            throw new Exception("Não é possível obter de buffer vazio");
 
         var item = _items[_outIndex];
         IncrementOutIndex();

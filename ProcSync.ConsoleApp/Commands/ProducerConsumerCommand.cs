@@ -2,7 +2,7 @@ using System.CommandLine;
 
 using ProcSync.ConsoleApp.Handlers;
 
-namespace ProcSync.ConsoleApp.Cli.Commands;
+namespace ProcSync.ConsoleApp.Commands;
 
 public static class ProducerConsumerCommand
 {
@@ -13,22 +13,48 @@ public static class ProducerConsumerCommand
             DefaultValueFactory = _ => 100
         };
 
-        Option<int> itemsOption = new("--items-amount")
+        Option<int> totalTimeOption = new("--total-time")
         {
-            DefaultValueFactory = _ => 1000
+            DefaultValueFactory = _ => 100
         };
 
-        Command producerConsumerCommand = new("producer-consumer", "Simulação produtor/consumidor")
+        Option<int> checkTimeOption = new("--check-time")
+        {
+            DefaultValueFactory = _ => 10
+        };
+
+
+        Option<int> produceTimeOption = new("--produce-time")
+        {
+            DefaultValueFactory = _ => 0
+        };
+
+
+        Option<int> consumeTimeOption = new("--consume-time")
+        {
+            DefaultValueFactory = _ => 0
+        };
+
+        Command producerConsumerCommand = new(
+            "producer-consumer",
+            "Simulação de produtor/consumidor"
+        )
         {
             bufferSizeOption,
-            itemsOption
+            totalTimeOption,
+            checkTimeOption,
+            produceTimeOption,
+            consumeTimeOption
         };
 
-        producerConsumerCommand.SetAction(p =>
+        producerConsumerCommand.SetAction(async (p) =>
         {
-            ProducerConsumerHandler.Run(
+            await ProducerConsumerHandler.Run(
                 p.GetValue(bufferSizeOption),
-                p.GetValue(itemsOption)
+                p.GetValue(totalTimeOption),
+                p.GetValue(checkTimeOption),
+                p.GetValue(produceTimeOption),
+                p.GetValue(consumeTimeOption)
             );
         });
 

@@ -9,6 +9,8 @@ public class SequenceGenerator<TItem> : IGenerator<TItem>
     private readonly Func<TItem, TItem> _generator;
     private readonly TItem _initialItem;
 
+    private readonly object _lock = new();
+
     public SequenceGenerator(TItem initialItem, Func<TItem, TItem> generator)
     {
         _generator = generator;
@@ -17,8 +19,11 @@ public class SequenceGenerator<TItem> : IGenerator<TItem>
 
     public TItem GenerateNext()
     {
-        var item = _lastGenerated == null ? _initialItem : _generator(_lastGenerated);
-        _lastGenerated = item;
-        return item;
+        lock (_lock)
+        {
+            var item = _lastGenerated == null ? _initialItem : _generator(_lastGenerated);
+            _lastGenerated = item;
+            return item;
+        }
     }
 }
