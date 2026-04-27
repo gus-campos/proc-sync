@@ -20,7 +20,6 @@ public class SimpleProducer<TItem> : IProducer<TItem>
         _buffer = buffer;
         _generator = generator;
         _timeToProduceInMs = timeToProduceInMs;
-
         _periodicWorker = new PeriodicWorker(TryToProduce, timeToCheckInMs);
     }
 
@@ -36,8 +35,10 @@ public class SimpleProducer<TItem> : IProducer<TItem>
 
     async private Task TryToProduce()
     {
-        if (!_buffer.IsFull)
-            await Produce();
+        if (_buffer.IsFull)
+            return;
+
+        await Produce();
     }
 
     async private Task Produce()

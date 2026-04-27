@@ -1,7 +1,7 @@
 
 using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.Domain;
+namespace ProcSync.Core.Domain.Simple;
 
 public class SimpleConsumer<TItem> : IConsumer<TItem>
 {
@@ -32,8 +32,10 @@ public class SimpleConsumer<TItem> : IConsumer<TItem>
 
     async private Task TryToConsume()
     {
-        if (!_buffer.IsEmpty)
-            await Consume();
+        if (_buffer.IsEmpty)
+            return;
+
+        await Consume();
     }
 
     async private Task Consume()
