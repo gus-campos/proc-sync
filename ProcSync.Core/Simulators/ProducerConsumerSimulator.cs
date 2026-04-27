@@ -8,7 +8,7 @@ public class ProducerConsumerSimulator(
     IEnumerable<IConsumer<double>> consumers
 )
 {
-    async public Task Run(int totalTimeInMs)
+    public async Task Run(int totalTimeInMs)
     {
         foreach (var producer in producers)
             producer.Start();

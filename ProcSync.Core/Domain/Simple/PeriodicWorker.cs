@@ -24,7 +24,7 @@ public class PeriodicWorker(
         _taskRunning = Task.Run(RunLoopAsync);
     }
 
-    async public Task StopAsync()
+    public async Task StopAsync()
     {
         if (_taskRunning == null)
         {
@@ -37,7 +37,7 @@ public class PeriodicWorker(
         _shouldStop = false;
     }
 
-    async private Task RunLoopAsync()
+    private async Task RunLoopAsync()
     {
         while (!_shouldStop)
         {

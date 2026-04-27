@@ -186,3 +186,18 @@ dotnet_diagnostic.CS0219.severity = warning
 
 ########################################
 dotnet_style_require_accessibility_modifiers = always:error
+
+########################################
+
+# 🔹 FORMATAÇÃO FINAL
+
+########################################
+
+# # força analyzers
+# dotnet_analyzer_diagnostic.severity = warning
+
+# # ordem dos modificadores
+dotnet_style_modifier_order = public,private,protected,internal,file,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,required,volatile,async
+
+# # força erro
+dotnet_diagnostic.IDE0036.severity = warning

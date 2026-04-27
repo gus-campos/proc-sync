@@ -28,12 +28,12 @@ public class Producer<TItem> : IProducer<TItem>
         _periodicWorker.Start();
     }
 
-    async public Task StopAsync()
+    public async Task StopAsync()
     {
         await _periodicWorker.StopAsync();
     }
 
-    async private Task TryToProduce()
+    private async Task TryToProduce()
     {
         if (_buffer.IsFull)
             return;
@@ -41,7 +41,7 @@ public class Producer<TItem> : IProducer<TItem>
         await Produce();
     }
 
-    async private Task Produce()
+    private async Task Produce()
     {
         await Task.Delay(_timeToProduceInMs);
         TItem item = _generator.GenerateNext();

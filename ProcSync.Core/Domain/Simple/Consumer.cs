@@ -25,12 +25,12 @@ public class Consumer<TItem> : IConsumer<TItem>
         _periodicWorker.Start();
     }
 
-    async public Task StopAsync()
+    public async Task StopAsync()
     {
         await _periodicWorker.StopAsync();
     }
 
-    async private Task TryToConsume()
+    private async Task TryToConsume()
     {
         if (_buffer.IsEmpty)
             return;
@@ -38,7 +38,7 @@ public class Consumer<TItem> : IConsumer<TItem>
         await Consume();
     }
 
-    async private Task Consume()
+    private async Task Consume()
     {
         var item = _buffer.Get();
         await Task.Delay(_timeToConsumeInMs);
