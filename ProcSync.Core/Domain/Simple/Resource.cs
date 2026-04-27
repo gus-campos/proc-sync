@@ -1,8 +1,8 @@
 using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.Domain;
+namespace ProcSync.Core.Domain.Simple;
 
-public class UnsafeResource : IResource
+public class Resource : IResource
 {
     private string _value = "---";
 

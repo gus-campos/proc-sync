@@ -41,13 +41,15 @@ Responsável pela lógica central da aplicação. Segue a seguinte estrutura:
 ```
 ├── ProcSync.Core
 │   ├── Domain
+│   │   ├── Simple
+│   │   └── Concurrent
 │   ├── Interfaces
 │   └── Simulators
 ```
 
 - Em `Simulators` estão as lógicas que fazem a simulação de cada problema proposto, usando interfaces definidas pros atores e recursos.
 - Em `Interfaces` estão as interfaces que os simuladores operam, e que representam de forma abstraída o comportamento que eles terão, e são respeitadas pelas diferentes implementações da mesma coisa.
-- Em `Domain` estão as diferentes implementações para as interfaces, com as lógicas para produzir os comportamentos desejados (ou indesejados). Alguns sendo compatíveis com concorrência e outros não.
+- Em `Domain` estão as diferentes implementações para as interfaces, com as lógicas para produzir os comportamentos desejados. Os do subdiretório `Concurrent` são thread-safe, enquanto os `Simple` não.
 
 ### `ProcSync.Tests` → testes automatizados
 

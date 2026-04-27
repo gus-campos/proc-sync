@@ -1,4 +1,6 @@
 using ProcSync.Core.Domain;
+using ProcSync.Core.Domain.Concurrent;
+using ProcSync.Core.Domain.Simple;
 using ProcSync.Core.Simulators;
 
 namespace ProcSync.ConsoleApp.Handlers;
@@ -17,14 +19,14 @@ public static class CounterHandler
 
     private static void Run_Simple_Increment(int steps)
     {
-        var counter = new SimpleCounter();
+        var counter = new Counter();
         var simulator = new ConcurrentCountingSimulator(counter);
         simulator.RunIncrement(steps);
     }
 
     private static void Run_Simple_IncrementDecrement(int steps)
     {
-        var counter = new SimpleCounter();
+        var counter = new Counter();
         var simulator = new ConcurrentCountingSimulator(counter);
         simulator.RunIncrementAndDecrement(steps);
     }

@@ -1,8 +1,9 @@
+
 using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.Domain;
+namespace ProcSync.Core.Domain.Concurrent;
 
-public class SafeOneWayBridge : IOneWayBridge
+public class ConcurrentOneWayBridge : IOneWayBridge
 {
     private readonly object _lock = new();
     private BridgeDirection? _currentDirection = null;

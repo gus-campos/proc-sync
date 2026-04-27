@@ -3,13 +3,13 @@ using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Domain.Simple;
 
-public class SimpleConsumer<TItem> : IConsumer<TItem>
+public class Consumer<TItem> : IConsumer<TItem>
 {
     private readonly IBuffer<TItem> _buffer;
     private readonly int _timeToConsumeInMs;
     private readonly PeriodicWorker _periodicWorker;
 
-    public SimpleConsumer(
+    public Consumer(
         IBuffer<TItem> buffer,
         int timeToConsumeInMs,
         int timeToCheckInMs

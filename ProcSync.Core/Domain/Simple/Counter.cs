@@ -1,9 +1,9 @@
 
 using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.Domain;
+namespace ProcSync.Core.Domain.Simple;
 
-public class SimpleCounter : ICounter
+public class Counter : ICounter
 {
     public int Count { get; private set; } = 0;
 

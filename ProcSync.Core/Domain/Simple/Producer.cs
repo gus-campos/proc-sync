@@ -1,16 +1,16 @@
 
 using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.Domain;
+namespace ProcSync.Core.Domain.Simple;
 
-public class SimpleProducer<TItem> : IProducer<TItem>
+public class Producer<TItem> : IProducer<TItem>
 {
     private readonly IBuffer<TItem> _buffer;
     private readonly IGenerator<TItem> _generator;
     private readonly int _timeToProduceInMs;
     private readonly PeriodicWorker _periodicWorker;
 
-    public SimpleProducer(
+    public Producer(
         IBuffer<TItem> buffer,
         IGenerator<TItem> generator,
         int timeToProduceInMs,

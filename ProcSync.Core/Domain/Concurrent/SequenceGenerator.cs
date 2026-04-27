@@ -1,7 +1,7 @@
 
 using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.Domain;
+namespace ProcSync.Core.Domain.Concurrent;
 
 public class SequenceGenerator<TItem> : IGenerator<TItem>
 {

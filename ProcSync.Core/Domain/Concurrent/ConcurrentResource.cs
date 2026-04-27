@@ -1,9 +1,9 @@
 
 using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.Domain;
+namespace ProcSync.Core.Domain.Concurrent;
 
-public class SafeResource : IResource
+public class ConcurrentResource : IResource
 {
     private string _value = "---";
     private readonly ReaderWriterLockSlim _rwLock = new();

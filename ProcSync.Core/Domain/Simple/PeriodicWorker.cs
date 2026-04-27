@@ -1,5 +1,5 @@
 
-namespace ProcSync.Core.Domain;
+namespace ProcSync.Core.Domain.Simple;
 
 public class PeriodicWorker(
     Func<Task> workToDo,

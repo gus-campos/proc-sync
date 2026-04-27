@@ -1,14 +1,14 @@
 using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.Domain;
+namespace ProcSync.Core.Domain.Concurrent;
 
-public class DeadlockDiningTable : IDiningTable
+public class ConcurrentDiningTable : IDiningTable
 {
     private readonly int _philosopherCount = 5;
     private readonly object[] _forks;
     private int _mealsEaten = 0;
 
-    public DeadlockDiningTable()
+    public ConcurrentDiningTable()
     {
         _forks = new object[_philosopherCount];
         for (int i = 0; i < _philosopherCount; i++)
@@ -17,7 +17,7 @@ public class DeadlockDiningTable : IDiningTable
 
     public void Dine(int millisecondsTimeout)
     {
-        using var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource(millisecondsTimeout);
         var tasks = new Task[_philosopherCount];
 
         for (int i = 0; i < _philosopherCount; i++)
@@ -26,9 +26,8 @@ public class DeadlockDiningTable : IDiningTable
             tasks[i] = Task.Run(() => Philosopher(id, cts.Token));
         }
 
-        Task.WhenAny(Task.WhenAll(tasks), Task.Delay(millisecondsTimeout)).Wait();
-
-        Console.WriteLine($"[DEADLOCK] Refeições realizadas: {_mealsEaten}");
+        Task.WaitAll(tasks);
+        Console.WriteLine($"[Solução] Refeições realizadas: {_mealsEaten}");
     }
 
     private void Philosopher(int id, CancellationToken token)
@@ -36,27 +35,29 @@ public class DeadlockDiningTable : IDiningTable
         int left = id;
         int right = (id + 1) % _philosopherCount;
 
-        while (true)
+        bool leftFirst = (id != _philosopherCount - 1);
+
+        while (!token.IsCancellationRequested)
         {
-            Console.WriteLine($"[DEADLOCK] Filósofo {id} pensa...");
+            Console.WriteLine($"[Solução] Filósofo {id} pensa...");
             Thread.Sleep(100);
 
-            Monitor.Enter(_forks[left]);
-            Console.WriteLine($"[DEADLOCK] Filósofo {id} pegou garfo esquerdo {left}");
+            object firstFork = leftFirst ? _forks[left] : _forks[right];
+            object secondFork = leftFirst ? _forks[right] : _forks[left];
 
-            Monitor.Enter(_forks[right]);
-            Console.WriteLine($"[DEADLOCK] Filósofo {id} pegou garfo direito {right}");
+            Monitor.Enter(firstFork);
+            Monitor.Enter(secondFork);
 
             try
             {
-                Console.WriteLine($"[DEADLOCK] Filósofo {id} comendo...");
+                Console.WriteLine($"[Solução] Filósofo {id} comendo (garfos {left} e {right})...");
                 Interlocked.Increment(ref _mealsEaten);
                 Thread.Sleep(200);
             }
             finally
             {
-                Monitor.Exit(_forks[right]);
-                Monitor.Exit(_forks[left]);
+                Monitor.Exit(secondFork);
+                Monitor.Exit(firstFork);
             }
         }
     }

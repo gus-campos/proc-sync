@@ -1,14 +1,14 @@
 using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.Domain;
+namespace ProcSync.Core.Domain.Concurrent;
 
-public class SafeBarberShop : IBarberShop
+public class ConcurrentBarberShop : IBarberShop
 {
     private readonly int _chairs;
     private int _waitingClients = 0;
     private readonly object _lock = new object();
 
-    public SafeBarberShop(int chairs = 5)
+    public ConcurrentBarberShop(int chairs = 5)
     {
         _chairs = chairs;
     }

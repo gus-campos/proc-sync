@@ -1,8 +1,8 @@
 using ProcSync.Core.Interfaces;
 
-namespace ProcSync.Core.Domain;
+namespace ProcSync.Core.Domain.Simple;
 
-public class UnsafeBarberShop(int chairs = 5) : IBarberShop
+public class BarberShop(int chairs = 5) : IBarberShop
 {
     private int _waitingClients = 0;
     // private bool _barberSleeping = true;

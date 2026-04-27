@@ -1,4 +1,6 @@
 using ProcSync.Core.Domain;
+using ProcSync.Core.Domain.Concurrent;
+using ProcSync.Core.Domain.Simple;
 using ProcSync.Core.Simulators;
 
 namespace ProcSync.ConsoleApp.Handlers;
@@ -24,12 +26,12 @@ public class ProducerConsumerHandler()
         // Producers
         var indexGenerator = new SequenceGenerator<double>(0, last => last + 1);
         var producers = Enumerable.Range(0, 1).Select(
-            _ => new SimpleProducer<double>(buffer, indexGenerator, produceTimeInMs, timeToCheckInMs)
+            _ => new Producer<double>(buffer, indexGenerator, produceTimeInMs, timeToCheckInMs)
         );
 
         // Consumers
         var consumers = Enumerable.Range(0, 1).Select(
-            _ => new SimpleConsumer<double>(buffer, consumeTimeInMs, timeToCheckInMs)
+            _ => new Consumer<double>(buffer, consumeTimeInMs, timeToCheckInMs)
         );
 
         var simulator = new ProducerConsumerSimulator(producers, consumers);
