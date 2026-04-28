@@ -6,13 +6,11 @@ public class PeriodicWorker(
     int timeToCheckInMs
 )
 {
-    private Task? _taskRunning = null;
-    private bool _shouldStop = false;
-
     private readonly int _timeToCheckInMs = timeToCheckInMs;
     private readonly Func<Task> _workToDo = workToDo;
 
-    public bool IsRunning => _taskRunning != null;
+    private Task? _taskRunning = null;
+    private bool _shouldStop = false;
 
     public void Start()
     {
@@ -21,6 +19,7 @@ public class PeriodicWorker(
             throw new Exception("Não é possível iniciar agente que já está executando");
         }
 
+        // Iniciar execução assíncrona e armazenar a task
         _taskRunning = Task.Run(RunLoopAsync);
     }
 
@@ -31,7 +30,10 @@ public class PeriodicWorker(
             throw new Exception("Não é possível encerrar agente que não está executando");
         }
 
+        // Sinalizar parada
         _shouldStop = true;
+
+        // esperar parar e resetar estado
         await _taskRunning;
         _taskRunning = null;
         _shouldStop = false;
@@ -41,16 +43,11 @@ public class PeriodicWorker(
     {
         while (!_shouldStop)
         {
-            // await Task.Delay(0) roda sincronamente, então para forçar 
-            // execução assíncrona é usado o yield nesses casos
+            // como "await Delay(0)" roda sincronamente, usa-se Yield para forçar assincronismo
             if (_timeToCheckInMs > 0)
-            {
                 await Task.Delay(_timeToCheckInMs);
-            }
             else
-            {
                 await Task.Yield();
-            }
 
             await _workToDo();
         }

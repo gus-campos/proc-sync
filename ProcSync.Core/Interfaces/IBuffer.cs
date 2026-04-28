@@ -1,10 +1,10 @@
 
+using ProcSync.Core.Utils;
+
 namespace ProcSync.Core.Interfaces;
 
 public interface IBuffer<TItem>
 {
-    public void Put(TItem item);
-    public TItem Get();
-    public bool IsEmpty { get; }
-    public bool IsFull { get; }
+    public bool TryPut(TItem item);
+    public Result<TItem> TryGet();
 }
