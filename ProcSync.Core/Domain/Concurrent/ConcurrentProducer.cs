@@ -33,7 +33,7 @@ public class ConcurrentProducer<TItem> : IProducer<TItem>
         await _periodicWorker.StopAsync();
     }
 
-    async private Task TryToProduce(CancellationToken token)
+    private async Task TryToProduce(CancellationToken token)
     {
         await Task.Delay(_timeToProduceInMs, token);
         TItem item = _generator.GenerateNext();

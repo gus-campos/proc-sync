@@ -7,13 +7,13 @@ namespace ProcSync.ConsoleApp.Handlers;
 
 public class ProducerConsumerHandler()
 {
-    async public static Task Run(
-        int bufferSize,
-        int totalTimeInMs,
-        int timeToCheckInMs,
-        int produceTimeInMs,
-        int consumeTimeInMs
-    )
+    public static async Task Run(
+       int bufferSize,
+       int totalTimeInMs,
+       int timeToCheckInMs,
+       int produceTimeInMs,
+       int consumeTimeInMs
+   )
     {
         Console.WriteLine($"\nTamanho do buffer: {bufferSize}");
         Console.WriteLine($"Tempo total: {totalTimeInMs / 1000.0} s");
@@ -21,43 +21,21 @@ public class ProducerConsumerHandler()
         Console.WriteLine($"Tempo para produzir: {produceTimeInMs}");
         Console.WriteLine($"Tempo para consumir: {consumeTimeInMs}\n");
 
-        if (false)
-        {
-            var buffer = new CircularBuffer<double>(bufferSize);
+        var buffer = new CircularBuffer<double>(bufferSize);
 
-            // Producers
-            var indexGenerator = new SequenceGenerator<double>(0, last => last + 1);
-            var producers = Enumerable.Range(0, 1).Select(
-                _ => new Producer<double>(buffer, indexGenerator, produceTimeInMs, timeToCheckInMs)
-            );
+        // Producers
+        var indexGenerator = new SequenceGenerator<double>(0, last => last + 1);
+        var producers = Enumerable.Range(0, 1).Select(
+            _ => new ConcurrentProducer<double>(buffer, indexGenerator, produceTimeInMs, timeToCheckInMs)
+        );
 
-            // Consumers
-            var consumers = Enumerable.Range(0, 1).Select(
-                _ => new Consumer<double>(buffer, consumeTimeInMs, timeToCheckInMs)
-            );
+        // Consumers
+        var consumers = Enumerable.Range(0, 1).Select(
+            _ => new ConcurrentConsumer<double>(buffer, consumeTimeInMs, timeToCheckInMs)
+        );
 
-            var simulator = new ProducerConsumerSimulator(producers, consumers);
+        var simulator = new ProducerConsumerSimulator(producers, consumers);
 
-            await simulator.Run(totalTimeInMs);
-        }
-
-        {
-            var buffer = new ConcurrentCircularBuffer<double>(bufferSize);
-
-            // Producers
-            var indexGenerator = new SequenceGenerator<double>(0, last => last + 1);
-            var producers = Enumerable.Range(0, 1).Select(
-                _ => new ConcurrentProducer<double>(buffer, indexGenerator, produceTimeInMs, timeToCheckInMs)
-            );
-
-            // Consumers
-            var consumers = Enumerable.Range(0, 1).Select(
-                _ => new ConcurrentConsumer<double>(buffer, consumeTimeInMs, timeToCheckInMs)
-            );
-
-            var simulator = new ProducerConsumerSimulator(producers, consumers);
-
-            await simulator.Run(totalTimeInMs);
-        }
+        await simulator.Run(totalTimeInMs);
     }
 }

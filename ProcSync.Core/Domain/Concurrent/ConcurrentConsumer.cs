@@ -26,12 +26,12 @@ public class ConcurrentConsumer<TItem> : IConsumer<TItem>
         _periodicWorker.Start();
     }
 
-    async public Task StopAsync()
+    public async Task StopAsync()
     {
         await _periodicWorker.StopAsync();
     }
 
-    async private Task TryToConsume(CancellationToken token)
+    private async Task TryToConsume(CancellationToken token)
     {
         Result<TItem> result = _buffer.TryGet();
 
