@@ -28,24 +28,25 @@ public class ConcurrentProducer<TItem> : IProducer<TItem>
         _periodicWorker.Start();
     }
 
-    public async Task StopAsync()
+    async public Task StopAsync()
     {
         await _periodicWorker.StopAsync();
     }
 
-    private async Task TryToProduce()
+    async private Task TryToProduce(CancellationToken token)
     {
-        if (_buffer.IsFull)
-            return;
-
-        await Produce();
-    }
-
-    private async Task Produce()
-    {
-        await Task.Delay(_timeToProduceInMs);
+        await Task.Delay(_timeToProduceInMs, token);
         TItem item = _generator.GenerateNext();
-        _buffer.Put(item);
-        Console.WriteLine($"Produziu: {item}");
+
+        bool hadSucces = _buffer.TryPut(item);
+
+        if (hadSucces)
+        {
+            Console.WriteLine($"Produziu: {item}");
+        }
+        else
+        {
+            Console.WriteLine($"Descartou: {item}");
+        }
     }
 }

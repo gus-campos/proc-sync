@@ -3,19 +3,15 @@ using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Domain.Concurrent;
 
-public class SequenceGenerator<TItem> : IGenerator<TItem>
+public class SequenceGenerator<TItem>(
+    TItem initialItem,
+    Func<TItem, TItem> generator
+) : IGenerator<TItem>
 {
     private TItem? _lastGenerated = default;
-    private readonly Func<TItem, TItem> _generator;
-    private readonly TItem _initialItem;
-
+    private readonly Func<TItem, TItem> _generator = generator;
+    private readonly TItem _initialItem = initialItem;
     private readonly object _lock = new();
-
-    public SequenceGenerator(TItem initialItem, Func<TItem, TItem> generator)
-    {
-        _generator = generator;
-        _initialItem = initialItem;
-    }
 
     public TItem GenerateNext()
     {

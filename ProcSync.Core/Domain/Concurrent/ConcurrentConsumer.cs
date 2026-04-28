@@ -1,5 +1,6 @@
 
 using ProcSync.Core.Interfaces;
+using ProcSync.Core.Utils;
 
 namespace ProcSync.Core.Domain.Concurrent;
 
@@ -25,23 +26,19 @@ public class ConcurrentConsumer<TItem> : IConsumer<TItem>
         _periodicWorker.Start();
     }
 
-    public async Task StopAsync()
+    async public Task StopAsync()
     {
         await _periodicWorker.StopAsync();
     }
 
-    private async Task TryToConsume()
+    async private Task TryToConsume(CancellationToken token)
     {
-        if (_buffer.IsEmpty)
-            return;
+        Result<TItem> result = _buffer.TryGet();
 
-        await Consume();
-    }
-
-    private async Task Consume()
-    {
-        var item = _buffer.Get();
-        await Task.Delay(_timeToConsumeInMs);
-        Console.WriteLine($"Consumiu: {item}");
+        if (result.Succes)
+        {
+            await Task.Delay(_timeToConsumeInMs, token);
+            Console.WriteLine($"Consumiu: {result.Item}");
+        }
     }
 }

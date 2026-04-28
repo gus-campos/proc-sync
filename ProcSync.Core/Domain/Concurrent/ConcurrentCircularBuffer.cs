@@ -9,6 +9,7 @@ public class ConcurrentCircularBuffer<TItem> : IBuffer<TItem>
     private readonly TItem[] _items;
     private readonly int _size;
     private readonly object _lock = new();
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
 
     private int _inIndex = 0;
     private int _outIndex = 0;
@@ -25,7 +26,8 @@ public class ConcurrentCircularBuffer<TItem> : IBuffer<TItem>
 
     public bool TryPut(TItem item)
     {
-        lock (_lock)
+        _semaphore.Wait();
+        try
         {
             if (IsFull)
                 return false;
@@ -36,11 +38,16 @@ public class ConcurrentCircularBuffer<TItem> : IBuffer<TItem>
 
             return true;
         }
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
     public Result<TItem> TryGet()
     {
-        lock (_lock)
+        _semaphore.Wait();
+        try
         {
             if (IsEmpty)
                 return new(false, default);
@@ -49,6 +56,10 @@ public class ConcurrentCircularBuffer<TItem> : IBuffer<TItem>
             IncrementOutIndex();
             _count--;
             return new(true, item);
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 

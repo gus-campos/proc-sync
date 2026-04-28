@@ -2,59 +2,74 @@
 namespace ProcSync.Core.Domain.Concurrent;
 
 public class ConcurrentPeriodicWorker(
-    Func<Task> workToDo,
+    Func<CancellationToken, Task> threadSafeWorkToBeDone,
     int timeToCheckInMs
 )
 {
+    /*
+    * O PeriodicWorker não é responsável por garantir a segurança e lock
+    * no trabalho executado. 
+    */
+
     private readonly int _timeToCheckInMs = timeToCheckInMs;
-    private readonly Func<Task> _workToDo = workToDo;
+    private readonly Func<CancellationToken, Task> _workToDo = threadSafeWorkToBeDone;
+    private readonly object _lock = new();
 
     private Task? _taskRunning = null;
-    private bool _shouldStop = false;
+    private CancellationTokenSource? _cts;
+    // private bool _shouldStop = false;
 
     public void Start()
     {
-        if (_taskRunning != null)
+        lock (_lock)
         {
-            throw new Exception("Não é possível iniciar agente que já está executando");
-        }
+            if (_taskRunning != null)
+                throw new Exception("Não é possível iniciar agente que já está executando");
 
-        // Iniciar execução assíncrona e guardar a task
-        _taskRunning = Task.Run(RunLoopAsync);
+            // Iniciar execução assíncrona e armazenar a task
+            _cts = new();
+            _taskRunning = Task.Run(() => RunLoopAsync(_cts.Token));
+        }
     }
 
     public async Task StopAsync()
     {
-        if (_taskRunning == null)
+        Task taskToWait;
+
+        lock (_lock)
         {
-            throw new Exception("Não é possível encerrar agente que não está executando");
+            if (_taskRunning == null)
+                throw new Exception("Não é possível encerrar agente que não está executando");
+
+            if (_cts == null || _cts.IsCancellationRequested)
+                throw new Exception("Token não existe ou já foi cancelado.");
+
+            // Cancelar token
+            taskToWait = _taskRunning;
+            _cts.Cancel();
         }
 
-        // Sinalizar parada
-        Volatile.Write(ref _shouldStop, true);
+        await taskToWait;
 
-        // esperar parar e resetar estado
-        await _taskRunning;
-        _taskRunning = null;
-        _shouldStop = false;
+        lock (_lock)
+        {
+            // Verifica novamente, para caso tenha reiniciado em outra thread
+            if (_taskRunning == taskToWait)
+                _taskRunning = null;
+        }
     }
 
-    private async Task RunLoopAsync()
+    private async Task RunLoopAsync(CancellationToken token)
     {
-        while (!Volatile.Read(ref _shouldStop))
+        while (!token.IsCancellationRequested)
         {
+            // como "await Delay(0)" roda sincronamente, usa-se Yield para forçar assincronismo
             if (_timeToCheckInMs > 0)
-            {
-                await Task.Delay(_timeToCheckInMs);
-            }
+                await Task.Delay(_timeToCheckInMs, token);
             else
-            {
-                // como "await Delay(0)" roda sincronamente
-                // usa-se Yield para forçar assincronismo
                 await Task.Yield();
-            }
 
-            await _workToDo();
+            await _workToDo(token);
         }
     }
 }
