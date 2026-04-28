@@ -1,5 +1,6 @@
 
 using ProcSync.Core.Interfaces;
+using ProcSync.Core.Utils;
 
 namespace ProcSync.Core.Domain.Concurrent;
 
@@ -9,12 +10,12 @@ public class ConcurrentCircularBuffer<TItem> : IBuffer<TItem>
     private readonly int _size;
     private readonly object _lock = new();
 
-    private volatile int _inIndex = 0;
-    private volatile int _outIndex = 0;
-    private volatile int _count = 0;
+    private int _inIndex = 0;
+    private int _outIndex = 0;
+    private int _count = 0;
 
-    public bool IsEmpty => _count == 0;
-    public bool IsFull => _count == _size;
+    private bool IsEmpty => _count == 0;
+    private bool IsFull => _count == _size;
 
     public ConcurrentCircularBuffer(int size)
     {
@@ -22,30 +23,32 @@ public class ConcurrentCircularBuffer<TItem> : IBuffer<TItem>
         _items = new TItem[_size];
     }
 
-    public void Put(TItem item)
+    public bool TryPut(TItem item)
     {
         lock (_lock)
         {
             if (IsFull)
-                throw new Exception("Não é possível inserir em buffer cheio");
+                return false;
 
             _items[_inIndex] = item;
             IncrementInIndex();
             _count++;
+
+            return true;
         }
     }
 
-    public TItem Get()
+    public Result<TItem> TryGet()
     {
         lock (_lock)
         {
             if (IsEmpty)
-                throw new Exception("Não é possível obter de buffer vazio");
+                return new(false, default);
 
             var item = _items[_outIndex];
             IncrementOutIndex();
             _count--;
-            return item;
+            return new(true, item);
         }
     }
 
