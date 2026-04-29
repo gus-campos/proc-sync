@@ -10,6 +10,7 @@ public static class RootCommandFactory
 
         root.Subcommands.Add(CounterCommand.Build());
         root.Subcommands.Add(ProducerConsumerCommand.Build());
+        root.Subcommands.Add(ParkingLotCommand.Build());
 
         return root;
     }
