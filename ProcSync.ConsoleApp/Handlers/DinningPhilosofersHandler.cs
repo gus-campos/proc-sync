@@ -11,9 +11,9 @@ public static class DinningPhilosofersHandler
     {
         Console.WriteLine("===== Teste Jantar dos Filósofos =====");
 
-        var deadlockTable = new DiningTable();
-        var deadlockSimulator = new DiningPhilosophersSimulator(deadlockTable, "COM DEADLOCK");
-        deadlockSimulator.Run(millisecondsTimeout: 4000); // após 4 segundos cancela o teste, pois espera-se que haja deadlock e os filósofos parem de comer
+        var table = new DiningTable();
+        var simulator = new DiningPhilosophersSimulator(table, "COM DEADLOCK");
+        simulator.Run(millisecondsTimeout: 4000); // após 4 segundos cancela o teste, pois espera-se que haja deadlock e os filósofos parem de comer
 
         Thread.Sleep(500);
         Console.WriteLine();

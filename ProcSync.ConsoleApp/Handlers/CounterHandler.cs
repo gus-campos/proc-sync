@@ -1,4 +1,4 @@
-using ProcSync.Core.Domain;
+
 using ProcSync.Core.Domain.Concurrent;
 using ProcSync.Core.Domain.Simple;
 using ProcSync.Core.Simulators;
