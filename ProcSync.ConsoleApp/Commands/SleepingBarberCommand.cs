@@ -26,12 +26,12 @@ public static class SleepingBarberCommand
             totalItemsOption
         };
 
-        command.SetAction((p) =>
+        command.SetAction(async (p) =>
         {
             int bufferSize = p.GetValue(bufferSizeOption);
             int totalItems = p.GetValue(totalItemsOption);
-
-            SleepingBarberHandler.Run(bufferSize, totalItems);
+            var handler = new SleepingBarberHandler();
+            await handler.Run();
         });
 
         return command;

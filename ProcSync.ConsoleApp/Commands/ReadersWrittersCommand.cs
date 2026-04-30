@@ -26,12 +26,14 @@ public static class ReadersWrittersCommand
             totalItemsOption
         };
 
-        command.SetAction((p) =>
+        command.SetAction(async (p) =>
         {
             int bufferSize = p.GetValue(bufferSizeOption);
             int totalItems = p.GetValue(totalItemsOption);
 
-            ReadersWrittersHandlers.Run(bufferSize, totalItems);
+            var handler = new ReadersWrittersHandlers();
+
+            await handler.Run();
         });
 
         return command;

@@ -26,12 +26,12 @@ public static class OneWayBridgeCommand
             totalItemsOption
         };
 
-        command.SetAction((p) =>
+        command.SetAction(async (p) =>
         {
             int bufferSize = p.GetValue(bufferSizeOption);
             int totalItems = p.GetValue(totalItemsOption);
-
-            OneWayBridgeHandler.Run(bufferSize, totalItems);
+            var handler = new OneWayBridgeHandler();
+            await handler.Run();
         });
 
         return command;

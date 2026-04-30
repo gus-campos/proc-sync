@@ -5,23 +5,31 @@ using ProcSync.Core.Simulators;
 
 namespace ProcSync.ConsoleApp.Handlers;
 
-public static class SleepingBarberHandler
+public class SleepingBarberHandler : BaseHandler
 {
-    public static void Run(int bufferSize, int totalItems)
+    protected override void PrintParams()
     {
-        Console.WriteLine("===== Teste Barbeiro Sonolento =====");
+        // Console.WriteLine($"\nTamanho do buffer: {bufferSize}");
+        // Console.WriteLine($"Tempo total: {totalTimeInMs / 1000.0} s");
+        // Console.WriteLine($"Tempo pra checagem: {totalTimeInMs / 1000.0} s");
+        // Console.WriteLine($"Tempo para produzir: {produceTimeInMs / 1000.0} s");
+        // Console.WriteLine($"Tempo para consumir: {consumeTimeInMs / 1000.0} s");
+    }
 
+    protected override async Task RunSimple()
+    {
         var unsafeShop = new BarberShop(chairs: 5);
         var unsafeSim = new BarberSimulator(unsafeShop, "SEM SINCRONIZAÇÃO");
         unsafeSim.Run(timeoutMs: 5000); // 5 segundos
+    }
 
-        Thread.Sleep(500);
-        Console.WriteLine();
 
+    protected override async Task RunConcurrent()
+    {
         var safeShop = new ConcurrentBarberShop(chairs: 5);
         var safeSim = new BarberSimulator(safeShop, "COM SINCRONIZAÇÃO");
         safeSim.Run(timeoutMs: 5000);
-
-        Console.WriteLine("===== Fim do teste Barbeiro Sonolento =====");
     }
+
 }
+

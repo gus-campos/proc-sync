@@ -5,40 +5,48 @@ using ProcSync.Core.Simulators;
 
 namespace ProcSync.ConsoleApp.Handlers;
 
-public static class PrinterHandler
+public class PrinterHandler(
+    int printingTimeInMs,
+    int checkingTimeInMs,
+    int clientsAmount,
+    int filesPerClient,
+    int baseTimeToQueue
+) : BaseHandler
 {
-    public static async Task Run(
-        int printingTimeInMs,
-        int checkingTimeInMs,
-        int clientsAmount,
-        int filesPerClient,
-        int baseTimeToQueue
-    )
+    protected override void PrintParams()
     {
-        {
-            var printer = new Printer(printingTimeInMs, checkingTimeInMs);
+        // Console.WriteLine($"\nTamanho do buffer: {bufferSize}");
+        // Console.WriteLine($"Tempo total: {totalTimeInMs / 1000.0} s");
+        // Console.WriteLine($"Tempo pra checagem: {totalTimeInMs / 1000.0} s");
+        // Console.WriteLine($"Tempo para produzir: {produceTimeInMs / 1000.0} s");
+        // Console.WriteLine($"Tempo para consumir: {consumeTimeInMs / 1000.0} s");
+    }
 
-            var printerSimulator = new PrinterSimulator(
-                printer,
-                clientsAmount,
-                filesPerClient,
-                baseTimeToQueue
-            );
+    protected override async Task RunSimple()
+    {
+        var printer = new Printer(printingTimeInMs, checkingTimeInMs);
 
-            await printerSimulator.Run();
-        }
+        var printerSimulator = new PrinterSimulator(
+            printer,
+            clientsAmount,
+            filesPerClient,
+            baseTimeToQueue
+        );
 
-        {
-            var printer = new ConcurrentPrinter(printingTimeInMs, checkingTimeInMs);
+        await printerSimulator.Run();
+    }
 
-            var printerSimulator = new PrinterSimulator(
-                printer,
-                clientsAmount,
-                filesPerClient,
-                baseTimeToQueue
-            );
+    protected override async Task RunConcurrent()
+    {
+        var printer = new ConcurrentPrinter(printingTimeInMs, checkingTimeInMs);
 
-            await printerSimulator.Run();
-        }
+        var printerSimulator = new PrinterSimulator(
+            printer,
+            clientsAmount,
+            filesPerClient,
+            baseTimeToQueue
+        );
+
+        await printerSimulator.Run();
     }
 }

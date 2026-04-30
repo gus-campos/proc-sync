@@ -55,13 +55,15 @@ public static class PrinterCommand
             int filesPerClient = parseResult.GetValue(filesPerClientOption);
             int queueDelay = parseResult.GetValue(queueDelayOption);
 
-            await PrinterHandler.Run(
+            var handler = new PrinterHandler(
                 printingTime,
                 checkingTime,
                 clientsAmount,
                 filesPerClient,
                 queueDelay
             );
+
+            await handler.Run();
         });
 
         return printerCommand;

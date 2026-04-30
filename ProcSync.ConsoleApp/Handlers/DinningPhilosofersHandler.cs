@@ -5,23 +5,30 @@ using ProcSync.Core.Simulators;
 
 namespace ProcSync.ConsoleApp.Handlers;
 
-public static class DinningPhilosofersHandler
+public class DinningPhilosofersHandler : BaseHandler
 {
-    public static void Run(int bufferSize, int totalItems)
+    protected override void PrintParams()
     {
-        Console.WriteLine("===== Teste Jantar dos Filósofos =====");
+        // Console.WriteLine($"\nTamanho do buffer: {bufferSize}");
+        // Console.WriteLine($"Tempo total: {totalTimeInMs / 1000.0} s");
+        // Console.WriteLine($"Tempo pra checagem: {totalTimeInMs / 1000.0} s");
+        // Console.WriteLine($"Tempo para produzir: {produceTimeInMs / 1000.0} s");
+        // Console.WriteLine($"Tempo para consumir: {consumeTimeInMs / 1000.0} s");
+    }
+
+    protected override async Task RunSimple()
+    {
 
         var table = new DiningTable();
         var simulator = new DiningPhilosophersSimulator(table, "COM DEADLOCK");
         simulator.Run(millisecondsTimeout: 4000); // após 4 segundos cancela o teste, pois espera-se que haja deadlock e os filósofos parem de comer
-
-        Thread.Sleep(500);
-        Console.WriteLine();
+    }
+    protected override async Task RunConcurrent()
+    {
 
         var safeTable = new ConcurrentDiningTable();
         var safeSimulator = new DiningPhilosophersSimulator(safeTable, "SEM DEADLOCK");
         safeSimulator.Run(millisecondsTimeout: 4000);
-
-        Console.WriteLine("===== Fim do teste Jantar dos Filósofos =====");
     }
+
 }

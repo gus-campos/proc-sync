@@ -20,10 +20,11 @@ public static class CounterCommand
             stepsOption
         };
 
-        counterCommand.SetAction(p =>
+        counterCommand.SetAction(async (p) =>
         {
             int steps = p.GetValue(stepsOption);
-            CounterHandler.Run(steps);
+            var counterHandler = new CounterHandler(steps);
+            await counterHandler.Run();
         });
 
         return counterCommand;

@@ -30,8 +30,8 @@ public static class ParkingLotCommand
         {
             int capacity = p.GetValue(capacityOption);
             int carsAmount = p.GetValue(carsAmountOption);
-
-            await ParkingLotHandler.Run(capacity, carsAmount);
+            var handler = new ParkingLotHandler(capacity, carsAmount);
+            await handler.Run();
         });
 
         return parkingLotCommand;

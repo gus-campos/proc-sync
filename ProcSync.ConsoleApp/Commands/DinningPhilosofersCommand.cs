@@ -26,12 +26,12 @@ public static class DinningPhilosofersCommand
             totalItemsOption
         };
 
-        command.SetAction((p) =>
+        command.SetAction(async (p) =>
         {
             int bufferSize = p.GetValue(bufferSizeOption);
             int totalItems = p.GetValue(totalItemsOption);
-
-            DinningPhilosofersHandler.Run(bufferSize, totalItems);
+            var handler = new DinningPhilosofersHandler();
+            await handler.Run();
         });
 
         return command;

@@ -5,40 +5,25 @@ using ProcSync.Core.Simulators;
 
 namespace ProcSync.ConsoleApp.Handlers;
 
-public static class CounterHandler
+public class CounterHandler(int steps) : BaseHandler
 {
-    public static void Run(int steps)
+    protected override void PrintParams()
     {
-        Console.WriteLine($"Passos: {steps}\n");
-
-        Run_Simple_Increment(steps);
-        Run_Simple_IncrementDecrement(steps);
-        Run_Concurrent_Increment(steps);
-        Run_Concurrent_IncrementDecrement(steps);
+        // Console.WriteLine($"\nTamanho do buffer: {bufferSize}");
+        // Console.WriteLine($"Tempo total: {totalTimeInMs / 1000.0} s");
+        // Console.WriteLine($"Tempo pra checagem: {totalTimeInMs / 1000.0} s");
+        // Console.WriteLine($"Tempo para produzir: {produceTimeInMs / 1000.0} s");
+        // Console.WriteLine($"Tempo para consumir: {consumeTimeInMs / 1000.0} s");
     }
 
-    private static void Run_Simple_Increment(int steps)
-    {
-        var counter = new Counter();
-        var simulator = new ConcurrentCountingSimulator(counter);
-        simulator.RunIncrement(steps);
-    }
-
-    private static void Run_Simple_IncrementDecrement(int steps)
+    protected override async Task RunSimple()
     {
         var counter = new Counter();
         var simulator = new ConcurrentCountingSimulator(counter);
         simulator.RunIncrementAndDecrement(steps);
     }
 
-    private static void Run_Concurrent_Increment(int steps)
-    {
-        var counter = new ConcurrentCounter();
-        var simulator = new ConcurrentCountingSimulator(counter);
-        simulator.RunIncrement(steps);
-    }
-
-    private static void Run_Concurrent_IncrementDecrement(int steps)
+    protected override async Task RunConcurrent()
     {
         var counter = new ConcurrentCounter();
         var simulator = new ConcurrentCountingSimulator(counter);

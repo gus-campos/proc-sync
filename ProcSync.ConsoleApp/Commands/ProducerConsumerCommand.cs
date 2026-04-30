@@ -52,13 +52,15 @@ public static class ProducerConsumerCommand
 
         producerConsumerCommand.SetAction(async (p) =>
         {
-            await ProducerConsumerHandler.Run(
+            var handler = new ProducerConsumerHandler(
                 p.GetValue(bufferSizeOption),
                 p.GetValue(totalTimeOption),
                 p.GetValue(checkTimeOption),
                 p.GetValue(produceTimeOption),
                 p.GetValue(consumeTimeOption)
             );
+
+            await handler.Run();
         });
 
         return producerConsumerCommand;
