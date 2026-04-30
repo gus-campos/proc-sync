@@ -38,7 +38,7 @@ public static class PrinterCommand
             DefaultValueFactory = _ => 100
         };
 
-        var printerCommand = new Command("printer", "Simulações de impressora")
+        var printerCommand = new Command("printer", "Simula impressora")
         {
             printingTimeOption,
             checkingTimeOption,
@@ -47,20 +47,16 @@ public static class PrinterCommand
             queueDelayOption
         };
 
-        printerCommand.SetAction(async (parseResult) =>
+        printerCommand.SetAction(async (p) =>
         {
-            int printingTime = parseResult.GetValue(printingTimeOption);
-            int checkingTime = parseResult.GetValue(checkingTimeOption);
-            int clientsAmount = parseResult.GetValue(clientsOption);
-            int filesPerClient = parseResult.GetValue(filesPerClientOption);
-            int queueDelay = parseResult.GetValue(queueDelayOption);
+            PrintOptions.Print(p);
 
             var handler = new PrinterHandler(
-                printingTime,
-                checkingTime,
-                clientsAmount,
-                filesPerClient,
-                queueDelay
+                p.GetValue(printingTimeOption),
+                p.GetValue(checkingTimeOption),
+                p.GetValue(clientsOption),
+                p.GetValue(filesPerClientOption),
+                p.GetValue(queueDelayOption)
             );
 
             await handler.Run();

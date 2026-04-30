@@ -52,6 +52,8 @@ public static class ProducerConsumerCommand
 
         producerConsumerCommand.SetAction(async (p) =>
         {
+            PrintOptions.Print(p);
+
             var handler = new ProducerConsumerHandler(
                 p.GetValue(bufferSizeOption),
                 p.GetValue(totalTimeOption),

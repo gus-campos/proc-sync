@@ -5,8 +5,6 @@ public abstract class BaseHandler
 {
     public async Task Run()
     {
-        PrintParams();
-
         Console.WriteLine("\n=============== Simples ===============\n");
 
         await RunSimple();
@@ -17,7 +15,6 @@ public abstract class BaseHandler
         await RunConcurrent();
     }
 
-    protected abstract void PrintParams();
     protected abstract Task RunSimple();
     protected abstract Task RunConcurrent();
 }

@@ -20,7 +20,7 @@ public static class ParkingLotCommand
             DefaultValueFactory = _ => 1000
         };
 
-        Command parkingLotCommand = new("parking-lot", "Simulações de estacionamento")
+        Command parkingLotCommand = new("parking-lot", "Simula estacionamento")
         {
             capacityOption,
             carsAmountOption
@@ -28,9 +28,13 @@ public static class ParkingLotCommand
 
         parkingLotCommand.SetAction(async (p) =>
         {
-            int capacity = p.GetValue(capacityOption);
-            int carsAmount = p.GetValue(carsAmountOption);
-            var handler = new ParkingLotHandler(capacity, carsAmount);
+            PrintOptions.Print(p);
+
+            var handler = new ParkingLotHandler(
+                p.GetValue(capacityOption),
+                p.GetValue(carsAmountOption)
+            );
+
             await handler.Run();
         });
 
