@@ -10,34 +10,37 @@ public static class ProducerConsumerCommand
     {
         Option<int> bufferSizeOption = new("--buffer-size")
         {
+            Description = "Tamanho do buffer compartilhado",
             DefaultValueFactory = _ => 100
         };
 
         Option<int> totalTimeOption = new("--total-time")
         {
+            Description = "Tempo total da simulação (ms)",
             DefaultValueFactory = _ => 100
         };
 
         Option<int> checkTimeOption = new("--check-time")
         {
+            Description = "Intervalo de checagem (ms)",
             DefaultValueFactory = _ => 10
         };
 
-
         Option<int> produceTimeOption = new("--produce-time")
         {
+            Description = "Tempo para produzir um item (ms)",
             DefaultValueFactory = _ => 0
         };
 
-
         Option<int> consumeTimeOption = new("--consume-time")
         {
+            Description = "Tempo para consumir um item (ms)",
             DefaultValueFactory = _ => 0
         };
 
         Command producerConsumerCommand = new(
             "producer-consumer",
-            "Simulação de produtor/consumidor"
+            "Simula produção e consumo"
         )
         {
             bufferSizeOption,

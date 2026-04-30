@@ -15,7 +15,7 @@ public static class CounterCommand
             DefaultValueFactory = _ => 1000
         };
 
-        Command counterCommand = new("counter", "Simulações de contagem")
+        Command counterCommand = new("counter", "Simula contagem")
         {
             stepsOption
         };

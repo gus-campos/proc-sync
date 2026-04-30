@@ -3,7 +3,7 @@ using ProcSync.Core.Interfaces;
 
 namespace ProcSync.Core.Domain.Concurrent;
 
-public class SequenceGenerator<TItem>(
+public class ConcurrentSequenceGenerator<TItem>(
     TItem initialItem,
     Func<TItem, TItem> generator
 ) : IGenerator<TItem>

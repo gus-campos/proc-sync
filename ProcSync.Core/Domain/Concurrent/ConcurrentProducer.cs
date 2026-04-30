@@ -41,12 +41,8 @@ public class ConcurrentProducer<TItem> : IProducer<TItem>
         bool hadSucces = _buffer.TryPut(item);
 
         if (hadSucces)
-        {
             Console.WriteLine($"Produziu: {item}");
-        }
         else
-        {
             Console.WriteLine($"Descartou: {item}");
-        }
     }
 }

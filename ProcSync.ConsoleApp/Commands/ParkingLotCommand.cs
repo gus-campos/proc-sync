@@ -8,21 +8,30 @@ public static class ParkingLotCommand
 {
     public static Command Build()
     {
-        // Option<int> stepsOption = new("--steps")
-        // {
-        //     Description = "Quantidade de passos",
-        //     DefaultValueFactory = _ => 1000
-        // };
+        Option<int> capacityOption = new("--capacity")
+        {
+            Description = "Capacidade do estacionamento {default: 10}",
+            DefaultValueFactory = _ => 10
+        };
+
+        Option<int> carsAmountOption = new("--cars-amount")
+        {
+            Description = "Quantidade de carros na simulação {default: 1000}",
+            DefaultValueFactory = _ => 1000
+        };
 
         Command parkingLotCommand = new("parking-lot", "Simulações de estacionamento")
         {
-            // stepsOption
+            capacityOption,
+            carsAmountOption
         };
 
         parkingLotCommand.SetAction(async (p) =>
         {
-            // p.GetValue(stepsOption);
-            await ParkingLotHandler.Run(10, 1000);
+            int capacity = p.GetValue(capacityOption);
+            int carsAmount = p.GetValue(carsAmountOption);
+
+            await ParkingLotHandler.Run(capacity, carsAmount);
         });
 
         return parkingLotCommand;
