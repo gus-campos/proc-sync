@@ -8,39 +8,44 @@ public class DiningTable : IDiningTable
     private readonly object[] _forks;
     private int _mealsEaten = 0;
 
+    // Constantes de tempo
+    private const int _tempoPensarMs = 100;   // tempo que o filósofo pensa
+    private const int _tempoComerMs = 200;    // tempo que o filósofo come
+
     public DiningTable()
     {
         _forks = new object[_philosopherCount];
         for (int i = 0; i < _philosopherCount; i++)
-            _forks[i] = new object();
+            _forks[i] = new object(); // cada garfo é um trinco exclusivo
     }
 
     public void Dine(int millisecondsTimeout)
     {
-        using var cts = new CancellationTokenSource();
+        var cts = new CancellationTokenSource(millisecondsTimeout);
         var tasks = new Task[_philosopherCount];
 
         for (int i = 0; i < _philosopherCount; i++)
         {
             int id = i;
-            tasks[i] = Task.Run(() => Philosopher(id, cts.Token));
+            tasks[i] = Task.Run(async () => await PhilosopherAsync(id, cts.Token));
         }
 
+        // Como pode haver deadlock, esperamos apenas o tempo limite
         Task.WhenAny(Task.WhenAll(tasks), Task.Delay(millisecondsTimeout)).Wait();
-
         Console.WriteLine($"[DEADLOCK] Refeições realizadas: {_mealsEaten}");
     }
 
-    private void Philosopher(int id, CancellationToken token)
+    private async Task PhilosopherAsync(int id, CancellationToken token)
     {
-        int left = id;
-        int right = (id + 1) % _philosopherCount;
+        int left = id;                         // garfo esquerdo = próprio id
+        int right = (id + 1) % _philosopherCount; // garfo direito = id seguinte (circular)
 
-        while (true)
+        while (!token.IsCancellationRequested)
         {
             Console.WriteLine($"[DEADLOCK] Filósofo {id} pensa...");
-            Thread.Sleep(100);
+            await Task.Delay(_tempoPensarMs, token);
 
+            // Todos pegam o esquerdo primeiro → risco de espera circular (deadlock)
             Monitor.Enter(_forks[left]);
             Console.WriteLine($"[DEADLOCK] Filósofo {id} pegou garfo esquerdo {left}");
 
@@ -51,7 +56,7 @@ public class DiningTable : IDiningTable
             {
                 Console.WriteLine($"[DEADLOCK] Filósofo {id} comendo...");
                 Interlocked.Increment(ref _mealsEaten);
-                Thread.Sleep(200);
+                await Task.Delay(_tempoComerMs, token);
             }
             finally
             {

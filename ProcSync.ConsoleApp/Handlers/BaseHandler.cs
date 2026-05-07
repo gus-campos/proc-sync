@@ -11,7 +11,7 @@ public abstract class BaseHandler
 
         Console.WriteLine("\n=============== Thread-safe ===============\n");
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         await RunConcurrent();
     }
 
