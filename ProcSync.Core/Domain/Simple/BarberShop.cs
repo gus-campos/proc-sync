@@ -5,60 +5,76 @@ namespace ProcSync.Core.Domain.Simple;
 public class BarberShop(int chairs = 5) : IBarberShop
 {
     private int _waitingClients = 0;
-    // private bool _barberSleeping = true;
+    private readonly object _lock = new();
 
-    public void Run(int millisecondsTimeout)
+    // Constantes para tempos
+    private const int _tempoEsperaMaximaMs = 500;   // tempo que o barbeiro espera antes de verificar novamente
+    private const int _tempoAtendimentoMs = 200;     // tempo de corte de cabelo
+    private const int _atrasoChegadaMs = 2;          // pequeno atraso aleatório na chegada
+
+    public async Task RunAsync(int millisecondsTimeout)
     {
-        var barberTask = Task.Run(BarberWork);
-        var customers = new List<Task>();
-
         using var cts = new CancellationTokenSource(millisecondsTimeout);
+        var barberTask = Task.Run(() => BarberWorkAsync(cts.Token)); // barbeiro em thread separada
 
-        for (int i = 0; i < 100; i++)
+        var customers = new List<Task>();
+        for (int i = 0; i < 100; i++) // 100 clientes tentam entrar
         {
             int id = i;
-            customers.Add(Task.Run(() =>
-            {
-                Customer(id);
-            }));
+            customers.Add(Task.Run(async () => await CustomerAsync(id, cts.Token)));
         }
 
-        Task.WaitAll([.. customers]);
-        Thread.Sleep(500);
+        try { await Task.WhenAll(customers); } catch (OperationCanceledException) { }
+
         cts.Cancel();
+        lock (_lock) { Monitor.PulseAll(_lock); } // acorda o barbeiro para terminar
+
+        try { await barberTask; } catch (OperationCanceledException) { }
     }
 
-    private void BarberWork()
+    private async Task BarberWorkAsync(CancellationToken token)
     {
-        while (true)
+        while (!token.IsCancellationRequested)
         {
-            if (_waitingClients == 0)
+            lock (_lock)
             {
-                Console.WriteLine("[UNSAFE] Barbeiro a dormir...");
-                // _barberSleeping = true;
-                while (_waitingClients == 0) { }
-                // _barberSleeping = false;
+                // Dorme enquanto não há clientes (bloqueio passivo)
+                while (_waitingClients == 0 && !token.IsCancellationRequested)
+                {
+                    Console.WriteLine("[UNSAFE] Barbeiro a dormir...");
+                    Monitor.Wait(_lock, _tempoEsperaMaximaMs);
+                }
+                if (token.IsCancellationRequested) break;
+                if (_waitingClients > 0)
+                {
+                    Console.WriteLine($"[UNSAFE] Barbeiro a atender. Espera: {_waitingClients}");
+                    _waitingClients--;
+                }
             }
-
-            int current = _waitingClients;
-            Console.WriteLine($"[UNSAFE] Barbeiro a atender. Espera: {current}");
-            _waitingClients--;
+            await Task.Delay(_tempoAtendimentoMs, token); // simula o atendimento
         }
     }
 
-    private void Customer(int id)
+    private async Task CustomerAsync(int id, CancellationToken token)
     {
-        if (_waitingClients < chairs)
+        if (token.IsCancellationRequested) return;
+        await Task.Delay(Random.Shared.Next(0, _atrasoChegadaMs), token); // chegada ligeiramente aleatória
+
+        // ***** ZONA CRÍTICA (sem proteção adequada) *****
+        lock (_lock)
         {
-            Thread.Sleep(Random.Shared.Next(0, 2));
-            _waitingClients++;
-            Console.WriteLine($"[UNSAFE] Cliente {id} sentou-se. Espera: {_waitingClients}");
-            if (_waitingClients > chairs)
-                Console.WriteLine($"[UNSAFE] *** ERRO: Excedeu cadeiras ({_waitingClients} > {chairs})! ***");
-        }
-        else
-        {
-            Console.WriteLine($"[UNSAFE] Cliente {id} foi embora (casa cheia).");
+            if (_waitingClients < chairs)
+            {
+                _waitingClients++;
+                Console.WriteLine($"[UNSAFE] Cliente {id} sentou-se. Espera: {_waitingClients}");
+                if (_waitingClients > chairs)
+                    Console.WriteLine($"[UNSAFE] *** ERRO: Excedeu cadeiras ({_waitingClients} > {chairs})! ***");
+                Monitor.Pulse(_lock); // acorda o barbeiro
+            }
+            else
+            {
+                Console.WriteLine($"[UNSAFE] Cliente {id} foi embora (casa cheia).");
+            }
         }
     }
 }
